@@ -1,0 +1,140 @@
+# MBC SMS - Apache Configuration with Clean URLs & DDoS Protection
+
+# Enable Rewrite Engine
+RewriteEngine On
+
+# Security - Prevent directory listing
+Options -Indexes
+ServerSignature Off
+
+# Protect sensitive files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.(sql|env|log|ini|sh|md)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ============================================
+# DDoS Protection & Rate Limiting
+# ============================================
+
+# Limit request body size (prevent large payload attacks)
+LimitRequestBody 10485760
+
+# Slowloris protection (requires mod_reqtimeout - install: a2enmod reqtimeout)
+<IfModule mod_reqtimeout.c>
+    RequestReadTimeout header=20-40,MinRate=500
+    RequestReadTimeout body=20,MinRate=500
+</IfModule>
+
+# Timeout settings
+Timeout 60
+KeepAlive On
+KeepAliveTimeout 5
+MaxKeepAliveRequests 100
+
+# ============================================
+# Security Headers
+# ============================================
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    SetEnvIf Request_URI "^/api/" IS_API
+    Header always set Access-Control-Allow-Origin "*" env=IS_API
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" env=IS_API
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-API-Token" env=IS_API
+</IfModule>
+
+# ============================================
+# Clean URL Rewriting
+# ============================================
+
+# Redirect trailing slashes
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)/$ /$1 [L,R=301]
+
+# Clean URLs - Remove .html extension
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^([^\.]+)$ $1.html [NC,L]
+
+# Clean URLs - Remove .php extension
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+# ============================================
+# URL Routing
+# ============================================
+
+# /ints/login -> login page
+RewriteRule ^ints/login$ /client_frontend/ints/login.html [NC,L]
+
+# /ints/logout -> logout action
+RewriteRule ^ints/logout$ /ints/signin?action=logout [NC,L]
+
+# /dashboard -> redirect based on role
+RewriteRule ^dashboard$ /index.php [NC,L]
+
+# Manager panel - /ints/manager/*
+RewriteRule ^ints/manager$ /Manager_frontend/ints/manager/SMSDashboard.html [NC,L]
+RewriteRule ^ints/manager/(.*)$ /Manager_frontend/ints/manager/$1 [NC,L]
+
+# Agent panel - /ints/agent/*
+RewriteRule ^ints/agent$ /Agent_frontend/ints/agent/SMSDashboard.html [NC,L]
+RewriteRule ^ints/agent/(.*)$ /Agent_frontend/ints/agent/$1 [NC,L]
+
+# Client panel - /ints/client/*
+RewriteRule ^ints/client$ /client_frontend/ints/client/SMSDashboard.html [NC,L]
+RewriteRule ^ints/client/(.*)$ /client_frontend/ints/client/$1 [NC,L]
+
+# ============================================
+# PHP Settings
+# ============================================
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value session.cookie_httponly 1
+    php_value session.use_strict_mode 1
+    php_value session.gc_maxlifetime 7200
+</IfModule>
+
+# ============================================
+# Compression & Caching
+# ============================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 hour"
+    ExpiresByType image/x-icon "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+</IfModule>
+
+# ============================================
+# Block Bad Bots & Suspicious Requests
+# ============================================
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTP_USER_AGENT} ^$
+    RewriteRule .* - [F]
+    
+    RewriteCond %{QUERY_STRING} (union|select|insert|delete|update|drop|alert|script|eval) [NC]
+    RewriteRule .* - [F]
+    
+    RewriteCond %{REQUEST_URI} (\.\./|\.\.\\) [NC]
+    RewriteRule .* - [F]
+</IfModule>

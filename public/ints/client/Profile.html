@@ -1,0 +1,315 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>MBC SMS | Profile</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="IPRN Billing and Softswitch">
+<meta name="author" content="Inteliotech">
+<!-- styles -->
+<link href="../assets/css/bootstrap.css" rel="stylesheet">
+<link href="../assets/css/select2.css" rel="stylesheet">
+<link href="../assets/css/jquery-ui-1.8.16.custom.css" rel="stylesheet">
+<link href="../assets/css/jquery.jqplot.css" rel="stylesheet">
+<link href="../assets/css/prettify.css" rel="stylesheet">
+<link href="../assets/css/elfinder.min.css" rel="stylesheet">
+<link href="../assets/css/elfinder.theme.css" rel="stylesheet">
+<link href="../assets/css/fullcalendar.css" rel="stylesheet">
+<link href="../assets/js/plupupload/jquery.plupload.queue/css/jquery.plupload.queue.css" rel="stylesheet">
+<link href="../assets/css/styles.css" rel="stylesheet">
+<link href="../assets/css/bootstrap-responsive.css" rel="stylesheet">
+<link href="../assets/css/icons-sprite.css" rel="stylesheet">
+<link id="themes" href="../assets/css/themes.css" rel="stylesheet">
+<link id="themes" href="../assets/css/theme-dark.css" rel="stylesheet">
+<link href="../assets/css/sidebar-enhanced.css" rel="stylesheet">
+<!--[if IE 7]>
+<link rel="stylesheet" type="text/css" href="../assets/css/ie/ie7.css" />
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" type="text/css" href="../assets/css/ie/ie8.css" />
+<![endif]-->
+<!--[if IE 9]>
+<link rel="stylesheet" type="text/css" href="../assets/css/ie/ie9.css" />
+<![endif]-->
+<!--fav and touch icons -->
+<link rel="shortcut icon" href="../assets/ico/favicon.ico">
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner top-nav">
+    <div class="container-fluid">
+      <div class="branding">
+	<div class="logo"> <img src='../assets/img/mbc-logo.svg' style='height:40px; width:auto;' alt='MBC SMS' /> </div>
+      </div>
+      <ul class="nav pull-right">
+        
+        <li class="dropdown"><a data-toggle="dropdown" class="dropdown-toggle" href="#">testme <span class="alert-noty"></span><i class="white-icons admin_user"></i><b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="Notifications.html"><i class="icon-envelope"></i> Notifications</a></li>
+            <li><a href="Profile.html"><i class="icon-briefcase"></i> My Profile</a></li>
+            <li><a href="MyActivity.html"><i class="icon-file"></i> My Activity</a></li>
+            <li class="divider"></li>
+            <li><a href="../login.html"><i class="icon-off"></i><strong> Logout</strong></a></li>
+          </ul>
+        </li>
+      </ul>
+      <button data-target=".nav-collapse" data-toggle="collapse" class="btn btn-navbar" type="button"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+      <div class="nav-collapse collapse">
+        <ul class="nav">
+			<li><a href="SMSDashboard.html"><span class="color-icons computer_imac"></span> Dashboard</a></li>
+			<!--<li><a href="MyNumbers" id='numbers'><span class="color-icons sound_co"></span> My Voice Numbers</a></li>-->
+			<li><a href="MySMSNumbers.html" id='smsnumbers'><span class="color-icons envelope_co"></span> My SMS Numbers</a></li>
+			<!--<li><a href="ActiveCalls" id='activecalls'><span class="color-icons mobile_phone_co"></span> Active Calls</a></li>-->
+			<li><a href="SMSCDRStats.html" id='smsstats'><span class="color-icons chart_pie_co"></span> SMS Reports</a></li>
+			<!--<li><a href="CDRReports" id='cdr'><span class="color-icons chart_line_co"></span> Detailed Reports</a></li>
+			<li><a href="CDRStats" id='stats'><span class="color-icons chart_curve_co"></span> Summary Reports</a></li>
+			<li><a href="NumberStats" id='nstats'><span class="color-icons chart_bar_co"></span> Numbers Stats</a></li>
+			<li><a href="TestPanel" id='testpanel'><span class="color-icons feed_co"></span> Voice Test Panel</a></li>-->
+			<li><a href="SMSTestPanel.html" id='smstestpanel'><span class="color-icons feed_co"></span> SMS Test Panel</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="sidebar">
+  <div class='lgxx'>
+		Welcome testme<br />
+	<b>Client Panel</b><br />2026-05-06 12:56:33  </div>
+  <ul class="side-nav accordion_mnu collapsible">
+    <li><a href="SMSDashboard.html"><span class="color-icons computer_imac"></span> Dashboard</a></li>
+	<!--<li><a href="MyNumbers" id='numbers'><span class="color-icons sound_co"></span> My Voice Numbers</a></li>-->
+	<li><a href="MySMSNumbers.html" id='smsnumbers'><span class="color-icons envelope_co"></span> My SMS Numbers</a></li>
+	<!--<li><a href="ActiveCalls" id='activecalls'><span class="color-icons mobile_phone_co"></span> Active Calls</a></li>-->
+	<li><a href="SMSCDRStats.html" id='smsstats'><span class="color-icons chart_pie_co"></span> SMS Reports</a></li>
+	<!--<li><a href="CDRReports" id='cdr'><span class="color-icons chart_line_co"></span> Detailed Reports</a></li>
+	<li><a href="CDRStats" id='stats'><span class="color-icons chart_curve_co"></span> Summary Reports</a></li>
+	<li><a href="NumberStats" id='nstats'><span class="color-icons chart_bar_co"></span> Numbers Stats</a></li>
+	<li><a href="TestPanel" id='testpanel'><span class="color-icons feed_co"></span> Voice Test Panel</a></li>-->
+	<li><a href="SMSTestPanel.html" id='smstestpanel'><span class="color-icons feed_co"></span> SMS Test Panel</a></li>
+    
+  <div id="side-accordion">
+	<div class="accordion-group">
+      <div class="accordion-header"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#side-accordion" href="#collapseTwo"></div>
+      <div id="collapseTwo" class="collapse">
+        <div class="accordion-content">
+          <div class="site-stat">
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="main-content">
+	<div class="container-fluid">
+		<ul class="breadcrumb">
+			<li><a href="SMSDashboard.html">Home</a><span class="divider">&raquo;</span></li>
+			<li class="active">Profile</li>
+		</ul>
+				<div class='row-fluid'>
+			<div class='span12'>
+				<p>Manage Your Profile and Accounts Settings Here.</p>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span12">
+				<div class="widget-block">
+					<div class="widget-content">
+						<div class="widget-box table-responsive">
+						<div class="row-fluid">
+							<div class="span6">
+								<div class="widget-head">
+									<h5 style='display:inline-block; float:left;'>Update Your Profile</h5>
+								</div>
+																<form action="" method='post' role="form" class="smart-wizard form-horizontal" id="form" enctype="multipart/form-data">
+									<input type='hidden' name='action' value='updateprofile' />
+							
+										<div class="form-group">
+											<label class="span3 control-label">
+												Your Name <span class="symbol" required></span>
+											</label>
+											<div class="span7">
+												<input class='form-control' type='text' name='name' placeholder='Your Name' value='' />
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="span3 control-label">
+												Your Email <span class="symbol" required></span>
+											</label>
+											<div class="span7">
+												<input class='form-control' type='text' name='email' placeholder='Email Address' value='' />
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="span3 control-label">
+												Contact No. <span class="symbol" required></span>
+											</label>
+											<div class="span7">
+												<input class='form-control' type='text' name='contact' placeholder='Contact Number' value='' />
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="span3 control-label">
+												Skype ID <span class="symbol" required></span>
+											</label>
+											<div class="span7">
+												<input class='form-control' type='text' name='skype' placeholder='Skype ID' value='' />
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="span3 control-label">
+												Company Name <span class="symbol" required></span>
+											</label>
+											<div class="span7">
+												<input class='form-control' type='text' name='company' placeholder='Company Name' value='' />
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="span3 control-label">
+												Address <span class="symbol" required></span>
+											</label>
+											<div class="span7">
+												<textarea class='form-control' name='address' placeholder='Address' rows='4'></textarea>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="span3 control-label">
+												Country <span class="symbol" required></span>
+											</label>
+											<div class="span7">
+												<select class='form-control' type='text' name='country' required>
+													<option value=''>Select Country</option>
+													<option value='Afghanistan' selected>Afghanistan</option><option value='Aland Islands'>Aland Islands</option><option value='Albania'>Albania</option><option value='Algeria'>Algeria</option><option value='American Samoa'>American Samoa</option><option value='Andorra'>Andorra</option><option value='Angola'>Angola</option><option value='Anguilla'>Anguilla</option><option value='Antarctica'>Antarctica</option><option value='Antigua and Barbuda'>Antigua and Barbuda</option><option value='Argentina'>Argentina</option><option value='Armenia'>Armenia</option><option value='Aruba'>Aruba</option><option value='Australia'>Australia</option><option value='Austria'>Austria</option><option value='Azerbaijan'>Azerbaijan</option><option value='Bahamas'>Bahamas</option><option value='Bahrain'>Bahrain</option><option value='Bangladesh'>Bangladesh</option><option value='Barbados'>Barbados</option><option value='Belarus'>Belarus</option><option value='Belgium'>Belgium</option><option value='Belize'>Belize</option><option value='Benin'>Benin</option><option value='Bermuda'>Bermuda</option><option value='Bhutan'>Bhutan</option><option value='Bolivia'>Bolivia</option><option value='Bonaire, Sint Eustatius and Saba'>Bonaire, Sint Eustatius and Saba</option><option value='Bosnia and Herzegovina'>Bosnia and Herzegovina</option><option value='Botswana'>Botswana</option><option value='Bouvet Island'>Bouvet Island</option><option value='Brazil'>Brazil</option><option value='British Indian Ocean Territory'>British Indian Ocean Territory</option><option value='Brunei'>Brunei</option><option value='Bulgaria'>Bulgaria</option><option value='Burkina Faso'>Burkina Faso</option><option value='Burundi'>Burundi</option><option value='Cambodia'>Cambodia</option><option value='Cameroon'>Cameroon</option><option value='Canada'>Canada</option><option value='Cape Verde'>Cape Verde</option><option value='Cayman Islands'>Cayman Islands</option><option value='Central African Republic'>Central African Republic</option><option value='Chad'>Chad</option><option value='Chile'>Chile</option><option value='China'>China</option><option value='Christmas Island'>Christmas Island</option><option value='Cocos (Keeling) Islands'>Cocos (Keeling) Islands</option><option value='Colombia'>Colombia</option><option value='Comoros'>Comoros</option><option value='Congo'>Congo</option><option value='Cook Islands'>Cook Islands</option><option value='Costa Rica'>Costa Rica</option><option value='Cote d'ivoire (Ivory Coast)'>Cote d'ivoire (Ivory Coast)</option><option value='Croatia'>Croatia</option><option value='Cuba'>Cuba</option><option value='Curacao'>Curacao</option><option value='Cyprus'>Cyprus</option><option value='Czech Republic'>Czech Republic</option><option value='Democratic Republic of the Congo'>Democratic Republic of the Congo</option><option value='Denmark'>Denmark</option><option value='Djibouti'>Djibouti</option><option value='Dominica'>Dominica</option><option value='Dominican Republic'>Dominican Republic</option><option value='Ecuador'>Ecuador</option><option value='Egypt'>Egypt</option><option value='El Salvador'>El Salvador</option><option value='Equatorial Guinea'>Equatorial Guinea</option><option value='Eritrea'>Eritrea</option><option value='Estonia'>Estonia</option><option value='Ethiopia'>Ethiopia</option><option value='Falkland Islands (Malvinas)'>Falkland Islands (Malvinas)</option><option value='Faroe Islands'>Faroe Islands</option><option value='Fiji'>Fiji</option><option value='Finland'>Finland</option><option value='France'>France</option><option value='French Guiana'>French Guiana</option><option value='French Polynesia'>French Polynesia</option><option value='French Southern Territories'>French Southern Territories</option><option value='Gabon'>Gabon</option><option value='Gambia'>Gambia</option><option value='Georgia'>Georgia</option><option value='Germany'>Germany</option><option value='Ghana'>Ghana</option><option value='Gibraltar'>Gibraltar</option><option value='Greece'>Greece</option><option value='Greenland'>Greenland</option><option value='Grenada'>Grenada</option><option value='Guadaloupe'>Guadaloupe</option><option value='Guam'>Guam</option><option value='Guatemala'>Guatemala</option><option value='Guernsey'>Guernsey</option><option value='Guinea'>Guinea</option><option value='Guinea-Bissau'>Guinea-Bissau</option><option value='Guyana'>Guyana</option><option value='Haiti'>Haiti</option><option value='Heard Island and McDonald Islands'>Heard Island and McDonald Islands</option><option value='Honduras'>Honduras</option><option value='Hong Kong'>Hong Kong</option><option value='Hungary'>Hungary</option><option value='Iceland'>Iceland</option><option value='India'>India</option><option value='Indonesia'>Indonesia</option><option value='Iran'>Iran</option><option value='Iraq'>Iraq</option><option value='Ireland'>Ireland</option><option value='Isle of Man'>Isle of Man</option><option value='Israel'>Israel</option><option value='Italy'>Italy</option><option value='Jamaica'>Jamaica</option><option value='Japan'>Japan</option><option value='Jersey'>Jersey</option><option value='Jordan'>Jordan</option><option value='Kazakhstan'>Kazakhstan</option><option value='Kenya'>Kenya</option><option value='Kiribati'>Kiribati</option><option value='Kosovo'>Kosovo</option><option value='Kuwait'>Kuwait</option><option value='Kyrgyzstan'>Kyrgyzstan</option><option value='Laos'>Laos</option><option value='Latvia'>Latvia</option><option value='Lebanon'>Lebanon</option><option value='Lesotho'>Lesotho</option><option value='Liberia'>Liberia</option><option value='Libya'>Libya</option><option value='Liechtenstein'>Liechtenstein</option><option value='Lithuania'>Lithuania</option><option value='Luxembourg'>Luxembourg</option><option value='Macao'>Macao</option><option value='Macedonia'>Macedonia</option><option value='Madagascar'>Madagascar</option><option value='Malawi'>Malawi</option><option value='Malaysia'>Malaysia</option><option value='Maldives'>Maldives</option><option value='Mali'>Mali</option><option value='Malta'>Malta</option><option value='Marshall Islands'>Marshall Islands</option><option value='Martinique'>Martinique</option><option value='Mauritania'>Mauritania</option><option value='Mauritius'>Mauritius</option><option value='Mayotte'>Mayotte</option><option value='Mexico'>Mexico</option><option value='Micronesia'>Micronesia</option><option value='Moldava'>Moldava</option><option value='Monaco'>Monaco</option><option value='Mongolia'>Mongolia</option><option value='Montenegro'>Montenegro</option><option value='Montserrat'>Montserrat</option><option value='Morocco'>Morocco</option><option value='Mozambique'>Mozambique</option><option value='Myanmar (Burma)'>Myanmar (Burma)</option><option value='Namibia'>Namibia</option><option value='Nauru'>Nauru</option><option value='Nepal'>Nepal</option><option value='Netherlands'>Netherlands</option><option value='New Caledonia'>New Caledonia</option><option value='New Zealand'>New Zealand</option><option value='Nicaragua'>Nicaragua</option><option value='Niger'>Niger</option><option value='Nigeria'>Nigeria</option><option value='Niue'>Niue</option><option value='Norfolk Island'>Norfolk Island</option><option value='North Korea'>North Korea</option><option value='Northern Mariana Islands'>Northern Mariana Islands</option><option value='Norway'>Norway</option><option value='Oman'>Oman</option><option value='Pakistan'>Pakistan</option><option value='Palau'>Palau</option><option value='Palestine'>Palestine</option><option value='Panama'>Panama</option><option value='Papua New Guinea'>Papua New Guinea</option><option value='Paraguay'>Paraguay</option><option value='Peru'>Peru</option><option value='Phillipines'>Phillipines</option><option value='Pitcairn'>Pitcairn</option><option value='Poland'>Poland</option><option value='Portugal'>Portugal</option><option value='Puerto Rico'>Puerto Rico</option><option value='Qatar'>Qatar</option><option value='Reunion'>Reunion</option><option value='Romania'>Romania</option><option value='Russia'>Russia</option><option value='Rwanda'>Rwanda</option><option value='Saint Barthelemy'>Saint Barthelemy</option><option value='Saint Helena'>Saint Helena</option><option value='Saint Kitts and Nevis'>Saint Kitts and Nevis</option><option value='Saint Lucia'>Saint Lucia</option><option value='Saint Martin'>Saint Martin</option><option value='Saint Pierre and Miquelon'>Saint Pierre and Miquelon</option><option value='Saint Vincent and the Grenadines'>Saint Vincent and the Grenadines</option><option value='Samoa'>Samoa</option><option value='San Marino'>San Marino</option><option value='Sao Tome and Principe'>Sao Tome and Principe</option><option value='Saudi Arabia'>Saudi Arabia</option><option value='Senegal'>Senegal</option><option value='Serbia'>Serbia</option><option value='Seychelles'>Seychelles</option><option value='Sierra Leone'>Sierra Leone</option><option value='Singapore'>Singapore</option><option value='Sint Maarten'>Sint Maarten</option><option value='Slovakia'>Slovakia</option><option value='Slovenia'>Slovenia</option><option value='Solomon Islands'>Solomon Islands</option><option value='Somalia'>Somalia</option><option value='South Africa'>South Africa</option><option value='South Georgia and the South Sandwich Islands'>South Georgia and the South Sandwich Islands</option><option value='South Korea'>South Korea</option><option value='South Sudan'>South Sudan</option><option value='Spain'>Spain</option><option value='Sri Lanka'>Sri Lanka</option><option value='Sudan'>Sudan</option><option value='Suriname'>Suriname</option><option value='Svalbard and Jan Mayen'>Svalbard and Jan Mayen</option><option value='Swaziland'>Swaziland</option><option value='Sweden'>Sweden</option><option value='Switzerland'>Switzerland</option><option value='Syria'>Syria</option><option value='Taiwan'>Taiwan</option><option value='Tajikistan'>Tajikistan</option><option value='Tanzania'>Tanzania</option><option value='Thailand'>Thailand</option><option value='Timor-Leste (East Timor)'>Timor-Leste (East Timor)</option><option value='Togo'>Togo</option><option value='Tokelau'>Tokelau</option><option value='Tonga'>Tonga</option><option value='Trinidad and Tobago'>Trinidad and Tobago</option><option value='Tunisia'>Tunisia</option><option value='Turkey'>Turkey</option><option value='Turkmenistan'>Turkmenistan</option><option value='Turks and Caicos Islands'>Turks and Caicos Islands</option><option value='Tuvalu'>Tuvalu</option><option value='Uganda'>Uganda</option><option value='Ukraine'>Ukraine</option><option value='United Arab Emirates'>United Arab Emirates</option><option value='United Kingdom'>United Kingdom</option><option value='United States'>United States</option><option value='United States Minor Outlying Islands'>United States Minor Outlying Islands</option><option value='Uruguay'>Uruguay</option><option value='Uzbekistan'>Uzbekistan</option><option value='Vanuatu'>Vanuatu</option><option value='Vatican City'>Vatican City</option><option value='Venezuela'>Venezuela</option><option value='Vietnam'>Vietnam</option><option value='Virgin Islands, British'>Virgin Islands, British</option><option value='Virgin Islands, US'>Virgin Islands, US</option><option value='Wallis and Futuna'>Wallis and Futuna</option><option value='Western Sahara'>Western Sahara</option><option value='Yemen'>Yemen</option><option value='Zambia'>Zambia</option><option value='Zimbabwe'>Zimbabwe</option>												</select>
+												
+											</div>
+										</div>
+	
+										<br clear='all' /><br />
+										<div class="form-group">
+											<div class="span5"></div>
+											<div class="span3">
+												<input class="btn btn-primary next-step btn-block" value='Update' type='submit'>
+											</div>
+										</div><br />
+								</form>
+							</div>
+							
+							
+							
+							<div class="span6">
+								<div class="widget-head">
+									<h5 style='display:inline-block; float:left;'>Update Your Password</h5>
+								</div>
+								
+								<form action="" method='post' role="form" class="smart-wizard form-horizontal" id="form" enctype="multipart/form-data">
+									<input type='hidden' name='action' value='updatepassword' />
+							
+										<div class="form-group">
+											<label class="span3 control-label">
+												Current Password <span class="symbol" required></span>
+											</label>
+											<div class="span7">
+												<input class='form-control' type='password' name='opassword' placeholder='Current Password' required />
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="span3 control-label">
+												New Password <span class="symbol" required></span>
+											</label>
+											<div class="span7">
+												<input class='form-control' type='password' name='npassword' placeholder='New Password' required />
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="span3 control-label">
+												Confirm Password <span class="symbol" required></span>
+											</label>
+											<div class="span7">
+												<input class='form-control' type='password' name='cpassword' placeholder='Confirm Password' required />
+											</div>
+										</div>
+										
+										<br clear='all' /><br />
+										<div class="form-group">
+											<div class="span5"></div>
+											<div class="span3">
+												<input class="btn btn-primary next-step btn-block" value='Update' type='submit'>
+											</div>
+										</div><br />
+								</form>
+							</div>
+						</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+localStorage.clear();
+</script>
+<script src="../assets/js/jquery.js"></script>
+<script src="../assets/js/jquery-ui-1.8.16.custom.min.js"></script>
+<script src="../assets/js/bootstrap.js"></script>
+<script src="../assets/js/select2.js"></script>
+<script src="../assets/js/prettify.js"></script>
+<script src="../assets/js/jquery.nicescroll.min.js"></script>
+<script src="../assets/js/accordion.jquery.js"></script>
+<script src="../assets/js/vaidation.jquery.js"></script>
+<script src="../assets/js/jquery-dynamic-form.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/jquery.dataTables.min.js"></script>
+<script src="../assets/js/ColVis.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/buttons.flash.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/jszip.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/pdfmake.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/vfs_fonts.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/buttons.html5.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/buttons.print.min.js"></script>
+
+<script src="../assets/js/custom-script.js"></script>
+<!-- html5.js for IE less than 9 -->
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script src="../assets/js/respond.min.js"></script>
+<script src="../assets/js/ios-orientationchange-fix.js"></script>
+<script>
+$(function () {
+
+	
+});
+</script>
+</body>
+</html>

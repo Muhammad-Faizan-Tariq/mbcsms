@@ -1,0 +1,315 @@
+/* ============================================
+   MBC SMS - Enhanced Sidebar Styles
+   Blue-White Modern Color Scheme
+   ============================================ */
+
+/* Navbar Adjustments */
+.navbar-fixed-top {
+    position: fixed !important;
+}
+
+.navbar-inner {
+    min-height: 50px;
+    padding: 5px 15px 5px 220px;
+    margin-left: 0 !important;
+}
+
+.top-nav {
+    margin-left: 0 !important;
+}
+
+.branding {
+    margin-left: 10px;
+}
+
+.logo {
+    height: 40px;
+    width: auto;
+    max-width: 200px;
+}
+
+/* Sidebar Container - Blue-White Theme */
+#sidebar {
+    width: 210px;
+    min-height: 100vh;
+    height: 100%;
+    position: fixed !important;
+    left: 0;
+    top: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 1000;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border-right: 1px solid #e2e8f0;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+/* Sidebar Header / Welcome Section */
+#sidebar .lgxx {
+    padding: 18px 15px;
+    background: linear-gradient(135deg, #3182ce 0%, #2563eb 100%);
+    border-bottom: none;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+#sidebar .lgxx #sidebar-username {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+#sidebar .lgxx b {
+    display: block;
+    margin-top: 4px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#sidebar .lgxx #sidebar-datetime {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 10px;
+}
+
+/* Main Navigation */
+.side-nav {
+    margin: 0;
+    padding: 8px 0;
+    list-style: none;
+}
+
+/* Navigation Items */
+.side-nav li a {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    color: #4a5568;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    transition: all 0.15s ease;
+    border-left: 3px solid transparent;
+    position: relative;
+    background: transparent;
+}
+
+.side-nav li a:hover {
+    background: #ebf8ff;
+    color: #2b6cb0;
+    border-left-color: #3182ce;
+}
+
+.side-nav li a.active {
+    background: #bee3f8;
+    color: #1a365d;
+    border-left-color: #2563eb;
+    font-weight: 600;
+}
+
+/* Navigation Icons */
+.side-nav li a .color-icons {
+    margin-right: 10px;
+    opacity: 0.7;
+    transition: opacity 0.15s ease;
+}
+
+.side-nav li a:hover .color-icons,
+.side-nav li a.active .color-icons {
+    opacity: 1;
+}
+
+/* Submenu / Dropdown */
+.side-nav li ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: #f7fafc;
+}
+
+.side-nav li ul li a {
+    padding: 8px 15px 8px 40px;
+    font-size: 11px;
+    text-transform: none;
+    font-weight: 400;
+    color: #718096;
+    border-left: 3px solid transparent;
+}
+
+.side-nav li ul li a:hover {
+    background: #edf2f7;
+    color: #4a5568;
+    border-left-color: #63b3ed;
+}
+
+/* Submenu Icons */
+.side-nav li ul li .sidenav-icon {
+    height: 18px;
+    width: 18px;
+    display: block;
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.side-nav li ul li .sidenav-icon .sidenav-link-color {
+    width: 5px;
+    height: 5px;
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #a0aec0;
+    border-radius: 50%;
+    transition: background 0.15s ease;
+}
+
+.side-nav li ul li a:hover .sidenav-icon .sidenav-link-color {
+    background: #3182ce;
+}
+
+/* Expandable Menu Header */
+.side-nav li#main > a {
+    cursor: pointer;
+}
+
+.side-nav li#main > a::after {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 4px solid transparent;
+    border-top-color: #a0aec0;
+    transition: transform 0.2s ease;
+}
+
+.side-nav li#main.open > a::after {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+/* Scrollbar Styling */
+#sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+#sidebar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+}
+
+#sidebar::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Main Content Adjustment */
+#main-content {
+    margin-left: 210px;
+    transition: margin-left 0.3s ease;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    #sidebar {
+        width: 180px;
+    }
+    
+    .navbar-inner {
+        padding-left: 190px;
+    }
+    
+    #main-content {
+        margin-left: 180px;
+    }
+    
+    .side-nav li a {
+        padding: 8px 12px;
+        font-size: 10px;
+    }
+    
+    .side-nav li ul li a {
+        padding-left: 32px;
+    }
+}
+
+@media (max-width: 768px) {
+    #sidebar {
+        width: 50px;
+        overflow-x: hidden;
+    }
+    
+    .navbar-inner {
+        padding-left: 60px;
+    }
+    
+    #sidebar .lgxx {
+        display: none;
+    }
+    
+    #sidebar:hover {
+        width: 210px;
+    }
+    
+    #sidebar:hover .lgxx {
+        display: block;
+    }
+    
+    #main-content {
+        margin-left: 50px;
+    }
+    
+    .side-nav li a span:not(.color-icons) {
+        display: none;
+    }
+    
+    #sidebar:hover .side-nav li a span:not(.color-icons) {
+        display: inline;
+    }
+}
+
+/* Dark Theme Override */
+.theme-dark #sidebar {
+    background: linear-gradient(180deg, #1e3a5f 0%, #152238 100%);
+    border-right-color: #2d3748;
+}
+
+.theme-dark #sidebar .lgxx {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.theme-dark .side-nav li a {
+    color: #cbd5e0;
+}
+
+.theme-dark .side-nav li a:hover {
+    background: rgba(49, 130, 206, 0.2);
+    color: #63b3ed;
+}
+
+.theme-dark .side-nav li a.active {
+    background: rgba(37, 99, 235, 0.3);
+    color: #93c5fd;
+}
+
+.theme-dark .side-nav li ul {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.theme-dark .side-nav li ul li a {
+    color: #a0aec0;
+}
+
+.theme-dark .side-nav li ul li a:hover {
+    background: rgba(49, 130, 206, 0.15);
+    color: #cbd5e0;
+}

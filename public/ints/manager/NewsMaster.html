@@ -1,0 +1,466 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>MBC SMS | Manage News</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="IPRN Billing and Softswitch">
+<meta name="author" content="Inteliotech">
+<!-- styles -->
+<link href="../assets/css/bootstrap.css" rel="stylesheet">
+<link href="../assets/css/select2.css" rel="stylesheet">
+<link href="../assets/css/jquery-ui-1.8.16.custom.css" rel="stylesheet">
+<link href="../assets/css/jquery.jqplot.css" rel="stylesheet">
+<link href="../assets/css/prettify.css" rel="stylesheet">
+<link href="../assets/css/elfinder.min.css" rel="stylesheet">
+<link href="../assets/css/elfinder.theme.css" rel="stylesheet">
+<link href="../assets/css/fullcalendar.css" rel="stylesheet">
+<link href="../assets/js/plupupload/jquery.plupload.queue/css/jquery.plupload.queue.css" rel="stylesheet">
+<link href="../assets/css/styles.css" rel="stylesheet">
+<link href="../assets/css/bootstrap-responsive.css" rel="stylesheet">
+<link href="../assets/css/icons-sprite.css" rel="stylesheet">
+<link id="themes" href="../assets/css/themes.css" rel="stylesheet">
+<link id="themes" href="../assets/css/theme-dark.css" rel="stylesheet">
+<link href="../assets/css/sidebar-enhanced.css" rel="stylesheet">
+<!--[if IE 7]>
+<link rel="stylesheet" type="text/css" href="../assets/css/ie/ie7.css" />
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" type="text/css" href="../assets/css/ie/ie8.css" />
+<![endif]-->
+<!--[if IE 9]>
+<link rel="stylesheet" type="text/css" href="../assets/css/ie/ie9.css" />
+<![endif]-->
+<!--fav and touch icons -->
+<link rel="shortcut icon" href="../assets/ico/favicon.ico">
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner top-nav">
+    <div class="container-fluid">
+      <div class="branding">
+	<div class="logo"> <img src='../assets/img/mbc-logo.svg' style='height:40px; width:auto;' alt='MBC SMS' /> </div>
+      </div>
+      <ul class="nav pull-right">
+	
+        <li class="dropdown"><a data-toggle="dropdown" class="dropdown-toggle" href="#">Shazi0908 <span class="alert-noty"></span><i class="white-icons admin_user"></i><b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="Notifications.html"><i class="icon-envelope"></i> Notifications </a></li>
+            <li><a href="Profile.html"><i class="icon-briefcase"></i> My Profile</a></li>
+            <li><a href="MyActivity.html"><i class="icon-file"></i> My Activity</a></li>
+            <li><a href="UserActivity.html"><i class="icon-pencil"></i> Users Activity</a></li>
+            <li class="divider"></li>
+            <li><a href="../login.html"><i class="icon-off"></i><strong> Logout</strong></a></li>
+          </ul>
+        </li>
+      </ul>
+      <button data-target=".nav-collapse" data-toggle="collapse" class="btn btn-navbar" type="button"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+      <div class="nav-collapse collapse">
+        <ul class="nav">
+			<li><a href="SMSDashboard.html"><span class="color-icons computer_imac"></span> Dashboard</a></li>
+			<!--<li id='main'><a href="#"><span class="color-icons sound_co"></span> IPRN Voice Module</a>
+			  <ul class="acitem">
+				<li><a href="Ranges" id='ranges'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>All Ranges</a></li>
+				<li><a href="MyNumbers" id='numbers'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>My Numbers</a></li>
+				<li><a href="RateCard" id='ratecard'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>RateCard</a></li>
+			<li><a href="AccessList" id='accesslist'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Access List</a></li>
+				<li><a href="AutoAccessList" id='autoaccesslist'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Auto Access List</a></li>
+			  </ul>
+			</li>-->
+			 <li id='main'><a href="#"><span class="color-icons envelope_co"></span> IPRN SMS Module</a>
+			  <ul class="acitem">
+				<li><a href="SMSRanges.html" id='smsranges'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Ranges</a></li>
+				<li><a href="MySMSNumbers.html" id='smsnumbers'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>My SMS Numbers</a></li>
+				<li><a href="SMSRateCard.html" id='smsratecard'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS RateCard</a></li>
+				<li><a href="SMSBulkAllocations.html" id='smsbulk'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Bulk Allocations</a></li>
+			  </ul>
+			</li>
+		 
+			<!--<li><a href="AudioFiles" id='audiofile'><span class="color-icons music_co"></span> Audio Files</a></li>-->
+			<li><a href="NewsMaster.html" id='newsmaster'><span class="color-icons cup"></span> News for Agents</a></li>
+			<li><a href="Agents.html" id='clients'><span class="color-icons user_co"></span> My Agents</a></li>
+			<!--<li><a href="ActiveCalls" id='activecalls'><span class="color-icons mobile_phone_co"></span> Active Calls</a></li>
+			<li id='main'><a href="#"><span class="color-icons chart_line_co"></span> Voice CDR & Statistics</a>
+			  <ul class="acitem">
+				<li><a href="CDRReports" id='cdr'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Detailed Reports</a></li>
+				<li><a href="CDRStats" id='stats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Summary Reports</a></li>
+				<li><a href="ClientStats" id='cstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Client Stats</a></li>
+				<li><a href="RangeStats" id='rstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Range Stats</a></li>
+				<li><a href="NumberStats" id='nstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Number Stats</a></li>
+				
+			  </ul>
+			</li>-->
+			<li id='main'><a href="#"><span class="color-icons chart_bar_co"></span> SMS CDR & Statistics</a>
+			  <ul class="acitem">
+				<li><a href="SMSCDRReports.html" id='smscdr'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Detailed SMS Reports</a></li>
+				<li><a href="SMSCDRStats.html" id='smsstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Summary SMS Reports</a></li>
+				<li><a href="SMSAgentStats.html" id='smscstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Agent SMS Stats</a></li>
+				<li><a href="SMSRangeStats.html" id='smsrstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Range Stats</a></li>
+				<li><a href="SMSNumberStats.html" id='smsnstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Number Stats</a></li>
+				
+			  </ul>
+			</li>
+			<li><a href="CreditNotes.html" id='creditnotes'><span class="color-icons briefcase_co"></span> My Credit Notes</a></li>
+			<li><a href="Account.html" id='paymentrequests'><span class="color-icons money_dollar_co"></span> My Account</a></li>
+			<!--<li><a href="PaymentRequests" id='paymentrequests'><span class="color-icons money_dollar_co"></span> Payment Requests</a></li>
+			<li><a href="BankAccounts" id='bankaccounts'><span class="color-icons bank_clr"></span> Bank Accounts</a></li>
+			
+			
+			<li id='main'><a href="#"><span class="color-icons statistics_sl"></span> Statements</a>
+			  <ul class="acitem">
+				<li><a href='Statements?ecuid=Qg==' id=''><span class='sidenav-icon'><span class='sidenav-link-color'></span></span>USD Statements</a></li><li><a href='Statements?ecuid=Qw==' id=''><span class='sidenav-icon'><span class='sidenav-link-color'></span></span>EUR Statements</a></li><li><a href='Statements?ecuid=RA==' id=''><span class='sidenav-icon'><span class='sidenav-link-color'></span></span>GBP Statements</a></li>			  </ul>
+			</li>-->
+			<!--<li><a href="TestPanel" id='testpanel'><span class="color-icons feed_co"></span> Voice Test Panel</a></li>-->
+			<li><a href="SMSTestPanel.html" id='smstestpanel'><span class="color-icons feed_co"></span> SMS Test Panel</a></li>
+			<li><a href="API.html" id='api'><span class="color-icons cup"></span> API</a></li>
+          
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="sidebar">
+  <div class='lgxx'>
+	<!--<div style='border:1px solid #CFCFCF; border-radius:50%; width:120px; height:120px; margin:auto; text-align:center;'><img src='../assets/img/lg.png' style='max-width:110px; max-height:110px; margin-top:10px;' /></div>-->
+	Welcome Shazi0908<br />
+	<b>Manager Panel</b><br />2026-05-06 12:49:29	<!--<br />API Token : ZIaAi3pOWEFJSVBHQ1NW-->
+  </div>
+  <ul class="side-nav accordion_mnu collapsible">
+    <li><a href="SMSDashboard.html"><span class="color-icons computer_imac"></span> Dashboard</a></li>
+    <!--<li id='main'><a href="#"><span class="color-icons sound_co"></span> IPRN Voice Module</a>
+      <ul class="acitem">
+        <li><a href="Ranges" id='ranges'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>All Ranges</a></li>
+        <li><a href="MyNumbers" id='numbers'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>My Numbers</a></li>
+        <li><a href="RateCard" id='ratecard'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>RateCard</a></li>
+	<li><a href="AccessList" id='accesslist'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Access List</a></li>
+        <li><a href="AutoAccessList" id='autoaccesslist'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Auto Access List</a></li>
+      </ul>
+    </li>-->
+     <li id='main'><a href="#"><span class="color-icons envelope_co"></span> IPRN SMS Module</a>
+      <ul class="acitem">
+        <li><a href="SMSRanges.html" id='smsranges'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Ranges</a></li>
+        <li><a href="MySMSNumbers.html" id='smsnumbers'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>My SMS Numbers</a></li>
+	<li><a href="SMSRateCard.html" id='smsratecard'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS RateCard</a></li>
+	<li><a href="SMSBulkAllocations.html" id='smsbulk'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Bulk Allocations</a></li>
+      </ul>
+    </li>
+	<!--<li><a href="TestPanel" id='testpanel'><span class="color-icons feed_co"></span> Voice Test Panel</a></li>-->
+	<li><a href="SMSTestPanel.html" id='smstestpanel'><span class="color-icons feed_co"></span> SMS Test Panel</a></li>
+	<li><a href="Agents.html" id='clients'><span class="color-icons user_co"></span> My Agents</a></li>
+	<!--<li><a href="ActiveCalls" id='activecalls'><span class="color-icons mobile_phone_co"></span> Active Calls</a></li>-->
+    <!--<li id='main'><a href="#"><span class="color-icons chart_line_co"></span> Voice CDR & Statistics</a>
+      <ul class="acitem">
+        <li><a href="CDRReports" id='cdr'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Detailed Reports</a></li>
+        <li><a href="CDRStats" id='stats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Summary Reports</a></li>
+        <li><a href="ClientStats" id='cstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Client Stats</a></li>
+        <li><a href="RangeStats" id='rstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Range Stats</a></li>
+        <li><a href="NumberStats" id='nstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Number Stats</a></li>
+        
+      </ul>
+    </li>-->
+	<li id='main'><a href="#"><span class="color-icons chart_bar_co"></span> SMS CDR & Statistics</a>
+      <ul class="acitem">
+        <li><a href="SMSCDRReports.html" id='smscdr'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Detailed SMS Reports</a></li>
+        <li><a href="SMSCDRStats.html" id='smsstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Summary SMS Reports</a></li>
+        <li><a href="SMSAgentStats.html" id='smscstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Agent SMS Stats</a></li>
+        <li><a href="SMSRangeStats.html" id='smsrstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Range Stats</a></li>
+        <li><a href="SMSNumberStats.html" id='smsnstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Number Stats</a></li>
+        
+      </ul>
+    </li>
+	<li><a href="CreditNotes.html" id='creditnotes'><span class="color-icons briefcase_co"></span> My Credit Notes</a></li>
+	<li><a href="Account.html" id='paymentrequests'><span class="color-icons money_dollar_co"></span> My Account</a></li>
+<!--	<li><a href="PaymentRequests" id='paymentrequests'><span class="color-icons money_dollar_co"></span> Payment Requests</a></li>
+	<li><a href="BankAccounts" id='bankaccounts'><span class="color-icons bank_clr"></span> Bank Accounts</a></li>
+	
+	
+	<li id='main'><a href="#"><span class="color-icons statistics_sl"></span> Statements</a>
+      <ul class="acitem">
+		<li><a href='Statements?ecuid=Qg==' id=''><span class='sidenav-icon'><span class='sidenav-link-color'></span></span>USD Statements</a></li><li><a href='Statements?ecuid=Qw==' id=''><span class='sidenav-icon'><span class='sidenav-link-color'></span></span>EUR Statements</a></li><li><a href='Statements?ecuid=RA==' id=''><span class='sidenav-icon'><span class='sidenav-link-color'></span></span>GBP Statements</a></li>      </ul>
+    </li>-->
+	<!--<li><a href="AudioFiles" id='audiofile'><span class="color-icons music_co"></span> Audio Files</a></li>-->
+	<li><a href="NewsMaster.html" id='newsmaster'><span class="color-icons cup"></span> News for Agents</a></li>
+        <li><a href="API.html" id='api'><span class="color-icons cup"></span> API</a></li>
+  </ul>
+  <div id="side-accordion">
+	<div class="accordion-group">
+      <div class="accordion-header"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#side-accordion" href="#collapseTwo"></div>
+      <div id="collapseTwo" class="collapse">
+        <div class="accordion-content">
+          <div class="site-stat">
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="main-content">
+	<div class="container-fluid">
+		<ul class="breadcrumb">
+			<li><a href="SMSDashboard.html">Home</a><span class="divider">&raquo;</span></li>
+			<li><a href="#">System Master</a><span class="divider">&raquo;</span></li>
+			<li class="active">News for Agents</li>
+		</ul>
+				<div class='row-fluid'>
+			<div class='span12'>
+				<p>Here you can put News & Updates for your agents, so they can see it on their panel and get connected with you.</p>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span12">
+				<div class="widget-block">
+					<div class="widget-head">
+						<h5 style='display:inline-block; float:left;'>News & Updates</h5>
+						<div style='display:inline-block; float:left; margin-left:35px; margin-top:5px;'>
+							<form action='' method='post'>
+							<div class='row-fluid' style='width:500px;'>
+							<div class='span4'>
+							<div class="input-append date" id="fdate1" data-date="2026-04-06" data-date-format="yyyy-mm-dd">
+								<div class="control-group">
+									<div class="controls">
+										<div class="input-append">
+											<input style='width:100px;' type="text" name='fdate1' value="2026-04-06">
+											<span class="add-on margin-fix"><i class="icon-th"></i></span>
+										</div>
+									</div>
+								</div>
+							</div>
+							</div>
+							<div class='span4'>
+							<div class="input-append date" id="fdate2" data-date="2026-05-06" data-date-format="yyyy-mm-dd">
+								<div class="control-group">
+									<div class="controls">
+										<div class="input-append">
+											<input size="16" style='width:100px;' type="text" name='fdate2' value="2026-05-06">
+											<span class="add-on margin-fix"><i class="icon-th"></i></span>
+										</div>
+									</div>
+								</div>
+							</div>
+							</div>
+							<div class='span4'>
+								<input type='submit' value='Filter' class='btn btn-xs btn-primary' />
+							</div>
+							</div>
+							</form>
+						</div>
+						<div class="widget-control pull-right">
+							<a href='#addm' title='Add New' class='btn btn-mini btn-primary' data-toggle='modal' id='add'><i class='glyphicon icon-plus-sign'></i></a>
+							<a id='removeall' class="btn btn-xs btn-danger" href="#removeall" title='Remove All Selected'><i class="glyphicon icon-trash"></i></a>
+						</div>
+						
+					</div>
+					<br clear='all' />
+					<div class="widget-content">
+						<div class="widget-box table-responsive">
+							<table class="data-tbl-boxy table table-bordered" id='dt'>
+							<thead>
+								<tr>
+									<th><input type="checkbox" id='toggle'></th>
+									<th>Date</th>
+									<th>Headline</th>
+									<th>News</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr><td colspan='5'></td></tr>
+							</tbody>
+	
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="addm" class="modal hide fade" tabindex="-1" data-width="760" area-hidden='true' style="display: none;">
+	<form action='' method='post' enctype='multipart/form-data'>
+	<input type='hidden' name='action' value='add' />
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">x</button>
+		<h4 class="modal-title" align='center'>Add New News</h4>
+	</div>
+	<div class="modal-body">
+		<div class="row-fluid">
+			
+			<div class="span12">					
+				
+				<p>
+					<label class="">Head Line</label>
+					<input class="form-control" type="text" name='headline' placeholder='The Subject Line for Your News' required >
+				</p>
+				<p>
+					<label class="">News</label>
+					<textarea class="form-control" name='news' required>
+					
+					</textarea>
+				</p>
+				
+			</div>
+				
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button type="button" data-dismiss="modal" class="btn btn-light-grey">
+			Close
+		</button>
+		<input type="submit" class="btn btn-primary" value='Add' />
+					
+	</div>
+	</form>		
+</div>
+<div id="viewm" class="modal hide fade" tabindex="-1" data-width="760" area-hidden='true' style="display: none;">
+			
+</div>
+<script>
+localStorage.clear();
+</script>
+<script src="../assets/js/jquery.js"></script>
+<script src="../assets/js/jquery-ui-1.8.16.custom.min.js"></script>
+<script src="../assets/js/bootstrap.js"></script>
+<script src="../assets/js/select2.js"></script>
+<script src="../assets/js/prettify.js"></script>
+<script src="../assets/js/jquery.nicescroll.min.js"></script>
+<script src="../assets/js/accordion.jquery.js"></script>
+<script src="../assets/js/vaidation.jquery.js"></script>
+<script src="../assets/js/jquery-dynamic-form.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/jquery.dataTables.min.js"></script>
+<script src="../assets/js/ColVis.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/buttons.flash.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/jszip.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/pdfmake.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/vfs_fonts.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/buttons.html5.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/buttons.print.min.js"></script>
+
+<script src="../assets/js/custom-script.js"></script>
+<!-- html5.js for IE less than 9 -->
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script src="../assets/js/respond.min.js"></script>
+<script src="../assets/js/ios-orientationchange-fix.js"></script>
+<script>
+$(function () {
+
+    var dt = $('#dt').dataTable({
+        "sPaginationType": "full_numbers",
+		"bStateSave": true,
+		"bServerSide": true,
+		"sAjaxSource": "res/data_news.php?fdate1=2026-04-06&fdate2=2026-05-06",
+            "aLengthMenu": [
+                [10, 25, 50, 100, 500, -1],
+                [10, 25, 50, 100, 500, "All"] // change per page values here
+            ],
+        "iDisplayLength": 25,
+		"aaSorting": [ [1,'desc'] ],
+				"aoColumns": [
+				{ "bSortable": false },
+				null,
+				null,
+				{ "bSortable": false},
+				{ "bSortable": false}
+				],
+		
+        "oLanguage": {
+            "sLengthMenu": "<span class='lenghtMenu'> _MENU_</span><span class='lengthLabel'>Show Records:</span>",
+        },
+        dom: 'fl<"clear">CBTtip',
+        buttons: [
+			'copy', 'csv', 'excel', 'pdf', 'print'
+		]
+    });
+	
+    $("div.tbl-tools-searchbox select").addClass('tbl_length');
+	
+	
+	$("input#toggle").change( function() {
+		status = $(this).prop("checked");
+		$("input.checkbox").each(function() {
+		$(this).prop("checked", !$(this).prop("checked"));
+		});
+	});
+		
+	$(document).on("click", "input.checkbox", function() {
+		var len = $('input.checkbox:checkbox:checked').length;
+	});
+	
+	$( document ).on( "click", "a#removeall", function(event)
+	{
+		event.preventDefault();
+		var cbarr = new Array();
+		$("input.checkbox:checkbox:checked").each(function()
+		{
+			var cbval = $(this).val();
+			cbarr.push(cbval);
+		});
+		if (typeof cbarr !== 'undefined' && cbarr.length > 0) 
+		{
+			if(confirm("Are you sure you want to remove all selected News?"))
+			{
+			
+				$.post("res/removeallnews.php", { cbarr: cbarr },
+				function(data) {
+					location.reload();
+					return false;
+				});
+			}
+		}
+		else
+		{
+			alert("You haven't selected anything");	
+		}
+				
+	});
+	$( document ).on( "click", "a#view", function(event)
+	{
+		event.preventDefault();
+		var news = $(this).attr("data");
+		
+			$("div#viewm").html("<div class='modal-body'>"+news+"</div>");
+			$("div#viewm").modal();
+			return false;
+		
+				
+	});
+	$('#fdate1').datepicker();
+	$('#fdate2').datepicker();
+	$("a#newsmaster").parent().parent().attr("style","display:block;");
+	$("a#newsmaster").attr("class","active");
+});
+</script>
+</body>
+</html>

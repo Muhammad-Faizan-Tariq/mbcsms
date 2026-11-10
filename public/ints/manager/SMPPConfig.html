@@ -1,0 +1,530 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MBC SMS | SMPP Configuration</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="IPRN Billing and Softswitch">
+<meta name="author" content="Inteliotech">
+<!-- styles -->
+<link href="../assets/css/bootstrap.css" rel="stylesheet">
+<link href="../assets/css/select2.css" rel="stylesheet">
+<link href="../assets/css/jquery-ui-1.8.16.custom.css" rel="stylesheet">
+<link href="../assets/css/jquery.jqplot.css" rel="stylesheet">
+<link href="../assets/css/prettify.css" rel="stylesheet">
+<link href="../assets/css/elfinder.min.css" rel="stylesheet">
+<link href="../assets/css/elfinder.theme.css" rel="stylesheet">
+<link href="../assets/css/fullcalendar.css" rel="stylesheet">
+<link href="../assets/js/plupupload/jquery.plupload.queue/css/jquery.plupload.queue.css" rel="stylesheet">
+<link href="../assets/css/styles.css" rel="stylesheet">
+<link href="../assets/css/bootstrap-responsive.css" rel="stylesheet">
+<link href="../assets/css/icons-sprite.css" rel="stylesheet">
+<link id="themes" href="../assets/css/themes.css" rel="stylesheet">
+<link id="themes" href="../assets/css/theme-dark.css" rel="stylesheet">
+<link href="../assets/css/sidebar-enhanced.css" rel="stylesheet">
+<!--[if IE 7]>
+<link rel="stylesheet" type="text/css" href="../assets/css/ie/ie7.css" />
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" type="text/css" href="../assets/css/ie/ie8.css" />
+<![endif]-->
+<!--[if IE 9]>
+<link rel="stylesheet" type="text/css" href="../assets/css/ie/ie9.css" />
+<![endif]-->
+<!--fav and touch icons -->
+<link rel="shortcut icon" href="../assets/ico/favicon.ico">
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner top-nav">
+    <div class="container-fluid">
+      <div class="branding">
+	<div class="logo"> <img src='../assets/img/mbc-logo.svg' style='height:40px; width:auto;' alt='MBC SMS' /> </div>
+      </div>
+      <ul class="nav pull-right">
+	
+        <li class="dropdown"><a data-toggle="dropdown" class="dropdown-toggle" href="#"><span id="nav-username">Loading...</span> <span class="alert-noty"></span><i class="white-icons admin_user"></i><b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="Notifications.html"><i class="icon-envelope"></i> Notifications </a></li>
+            <li><a href="Profile.html"><i class="icon-briefcase"></i> My Profile</a></li>
+            <li><a href="MyActivity.html"><i class="icon-file"></i> My Activity</a></li>
+            <li><a href="UserActivity.html"><i class="icon-pencil"></i> Users Activity</a></li>
+            <li class="divider"></li>
+            <li><a href="#" onclick="logout()"><i class="icon-off"></i><strong> Logout</strong></a></li>
+          </ul>
+        </li>
+      </ul>
+      <button data-target=".nav-collapse" data-toggle="collapse" class="btn btn-navbar" type="button"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+      <div class="nav-collapse collapse">
+        <ul class="nav">
+			<li><a href="SMSDashboard.html"><span class="color-icons computer_imac"></span> Dashboard</a></li>
+			 <li id='main'><a href="#"><span class="color-icons envelope_co"></span> IPRN SMS Module</a>
+			  <ul class="acitem">
+				<li><a href="SMSRanges.html" id='smsranges'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Ranges</a></li>
+				<li><a href="MySMSNumbers.html" id='smsnumbers'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>My SMS Numbers</a></li>
+				<li><a href="SMSRateCard.html" id='smsratecard'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS RateCard</a></li>
+				<li><a href="SMSBulkAllocations.html" id='smsbulk'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Bulk Allocations</a></li>
+			  </ul>
+			</li>
+			<li><a href="SMSTestPanel.html" id='smstestpanel'><span class="color-icons feed_co"></span> SMS Test Panel</a></li>
+			<li><a href="Agents.html" id='clients'><span class="color-icons user_co"></span> My Agents</a></li>
+			<li id='main'><a href="#"><span class="color-icons chart_bar_co"></span> SMS CDR & Statistics</a>
+			  <ul class="acitem">
+				<li><a href="SMSCDRReports.html" id='smscdr'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Detailed SMS Reports</a></li>
+				<li><a href="SMSCDRStats.html" id='smsstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Summary SMS Reports</a></li>
+				<li><a href="SMSAgentStats.html" id='smscstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Agent SMS Stats</a></li>
+				<li><a href="SMSRangeStats.html" id='smsrstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Range Stats</a></li>
+				<li><a href="SMSNumberStats.html" id='smsnstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Number Stats</a></li>
+			  </ul>
+			</li>
+			<li><a href="CreditNotes.html" id='creditnotes'><span class="color-icons briefcase_co"></span> My Credit Notes</a></li>
+			<li><a href="Account.html" id='paymentrequests'><span class="color-icons money_dollar_co"></span> My Account</a></li>
+			<li><a href="NewsMaster.html" id='newsmaster'><span class="color-icons cup"></span> News for Agents</a></li>
+			<li><a href="API.html" id='api'><span class="color-icons cup"></span> API</a></li>
+			<li class="active"><a href="SMPPConfig.html" id='smppconfig'><span class="color-icons link_co"></span> SMPP Config</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="sidebar">
+  <div class='lgxx'>
+	Welcome <span id="sidebar-username">Loading...</span><br />
+	<b>Manager Panel</b><br /><span id="sidebar-datetime">--</span>
+  </div>
+  <ul class="side-nav accordion_mnu collapsible">
+    <li><a href="SMSDashboard.html"><span class="color-icons computer_imac"></span> Dashboard</a></li>
+    <li id='main'><a href="#"><span class="color-icons envelope_co"></span> IPRN SMS Module</a>
+      <ul class="acitem">
+        <li><a href="SMSRanges.html"><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Ranges</a></li>
+        <li><a href="MySMSNumbers.html"><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>My SMS Numbers</a></li>
+        <li><a href="SMSRateCard.html"><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS RateCard</a></li>
+        <li><a href="SMSBulkAllocations.html"><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Bulk Allocations</a></li>
+      </ul>
+    </li>
+    <li><a href="SMSTestPanel.html"><span class="color-icons feed_co"></span> SMS Test Panel</a></li>
+    <li><a href="Agents.html"><span class="color-icons user_co"></span> My Agents</a></li>
+    <li id='main'><a href="#"><span class="color-icons chart_bar_co"></span> SMS CDR & Statistics</a>
+      <ul class="acitem">
+        <li><a href="SMSCDRReports.html"><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Detailed SMS Reports</a></li>
+        <li><a href="SMSCDRStats.html"><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Summary SMS Reports</a></li>
+        <li><a href="SMSAgentStats.html"><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Agent SMS Stats</a></li>
+        <li><a href="SMSRangeStats.html"><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Range Stats</a></li>
+        <li><a href="SMSNumberStats.html"><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Number Stats</a></li>
+      </ul>
+    </li>
+    <li><a href="CreditNotes.html"><span class="color-icons briefcase_co"></span> My Credit Notes</a></li>
+    <li><a href="Account.html"><span class="color-icons money_dollar_co"></span> My Account</a></li>
+    <li><a href="NewsMaster.html"><span class="color-icons cup"></span> News for Agents</a></li>
+    <li><a href="API.html"><span class="color-icons cup"></span> API</a></li>
+    <li class="active"><a href="SMPPConfig.html"><span class="color-icons link_co"></span> SMPP Config</a></li>
+    <li><a href="Profile.html"><span class="color-icons user_co"></span> Profile</a></li>
+  </ul>
+</div>
+<div id="main-content">
+    <div class="container-fluid">
+        <ul class="breadcrumb">
+            <li><a href="SMSDashboard.html">Home</a><span class="divider">&raquo;</span></li>
+            <li class="active">SMPP Configuration</li>
+        </ul>
+
+        <!-- SMPP Status -->
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="widget-block">
+                    <div class="widget-head">
+                        <h5><i class="black-icons server"></i> SMPP Server Status</h5>
+                        <div class="widget-control pull-right">
+                            <button class="btn btn-success btn-small" onclick="checkStatus()">
+                                <i class="icon-refresh"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    <div class="widget-content">
+                        <div class="widget-box">
+                            <div class="row-fluid">
+                                <div class="span3">
+                                    <div class="stat-block">
+                                        <ul>
+                                            <li class="stat-count">
+                                                <span>Jasmin Status</span>
+                                                <span id="jasmin-status" class="label label-info">Checking...</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="stat-block">
+                                        <ul>
+                                            <li class="stat-count">
+                                                <span>SMPP Port</span>
+                                                <span id="smpp-port">2775</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="stat-block">
+                                        <ul>
+                                            <li class="stat-count">
+                                                <span>SMS Today</span>
+                                                <span id="sms-today">0</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="span3">
+                                    <div class="stat-block">
+                                        <ul>
+                                            <li class="stat-count">
+                                                <span>Total Received</span>
+                                                <span id="total-received">0</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SMPP Credentials -->
+        <div class="row-fluid">
+            <div class="span6">
+                <div class="widget-block">
+                    <div class="widget-head">
+                        <h5><i class="black-icons key"></i> SMPP Credentials for Supplier</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="widget-box">
+                            <table class="table table-bordered table-striped">
+                                <tr>
+                                    <th>Host / IP</th>
+                                    <td><code id="smpp-host">185.255.94.89</code></td>
+                                </tr>
+                                <tr>
+                                    <th>Port</th>
+                                    <td><code id="smpp-port-display">2775</code></td>
+                                </tr>
+                                <tr>
+                                    <th>System ID</th>
+                                    <td><code id="smpp-system-id">mbc_supplier</code></td>
+                                </tr>
+                                <tr>
+                                    <th>Password</th>
+                                    <td>
+                                        <code id="smpp-password">••••••••••••</code>
+                                        <button class="btn btn-mini btn-info" onclick="togglePassword()">
+                                            <i class="icon-eye-open"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Bind Type</th>
+                                    <td><code>TR (Transceive)</code></td>
+                                </tr>
+                            </table>
+                            <div class="alert alert-info">
+                                <button type="button" class="close" data-dismiss="alert">×</button>
+                                <strong>Info:</strong> Give these credentials to your SMS supplier. 
+                                They will route IPRN numbers to your SMPP server.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="span6">
+                <div class="widget-block">
+                    <div class="widget-head">
+                        <h5><i class="black-icons link"></i> Webhook Configuration</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="widget-box">
+                            <table class="table table-bordered table-striped">
+                                <tr>
+                                    <th>Webhook URL</th>
+                                    <td><code id="webhook-url"></code></td>
+                                </tr>
+                                <tr>
+                                    <th>API Key</th>
+                                    <td>
+                                        <code id="webhook-key">••••••••••••</code>
+                                        <button class="btn btn-mini btn-info" onclick="toggleWebhookKey()">
+                                            <i class="icon-eye-open"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Method</th>
+                                    <td><code>POST</code></td>
+                                </tr>
+                            </table>
+                            <div class="alert alert-warning">
+                                <button type="button" class="close" data-dismiss="alert">×</button>
+                                <strong>Security:</strong> Keep the API key secret. Configure this in Jasmin's HTTP callback.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent SMS -->
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="widget-block">
+                    <div class="widget-head">
+                        <h5><i class="black-icons envelope"></i> Recent Incoming SMS</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="widget-box table-responsive">
+                            <table class="data-tbl-boxy table table-bordered" id="recent-sms">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>From (CLI)</th>
+                                        <th>To (IPRN)</th>
+                                        <th>Range</th>
+                                        <th>Client</th>
+                                        <th>Payout</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Loaded dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hierarchy Stats -->
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="widget-block">
+                    <div class="widget-head">
+                        <h5><i class="black-icons chart"></i> SMS Distribution (Manager → Agent → Client)</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="widget-box">
+                            <div class="row-fluid">
+                                <div class="span4">
+                                    <h4>Manager Earnings</h4>
+                                    <table class="table table-condensed">
+                                        <tr>
+                                            <th>Today</th>
+                                            <td id="mgr-today">$0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <th>This Month</th>
+                                            <td id="mgr-month">$0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Total SMS</th>
+                                            <td id="mgr-sms">0</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="span4">
+                                    <h4>Agent Earnings (All)</h4>
+                                    <table class="table table-condensed">
+                                        <tr>
+                                            <th>Today</th>
+                                            <td id="agent-today">$0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <th>This Month</th>
+                                            <td id="agent-month">$0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Active Agents</th>
+                                            <td id="active-agents">0</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="span4">
+                                    <h4>Client Earnings (All)</h4>
+                                    <table class="table table-condensed">
+                                        <tr>
+                                            <th>Today</th>
+                                            <td id="client-today">$0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <th>This Month</th>
+                                            <td id="client-month">$0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Active Clients</th>
+                                            <td id="active-clients">0</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="../assets/js/jquery.js"></script>
+<script src="../assets/js/jquery-ui-1.8.16.custom.min.js"></script>
+<script src="../assets/js/bootstrap.js"></script>
+<script src="../assets/js/select2.js"></script>
+<script src="../assets/js/prettify.js"></script>
+<script src="../assets/js/jquery.nicescroll.min.js"></script>
+<script src="../assets/js/accordion.jquery.js"></script>
+<script src="../assets/js/vaidation.jquery.js"></script>
+<script src="../assets/js/jquery-dynamic-form.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/jquery.dataTables.min.js"></script>
+<script src="../assets/js/custom-script.js"></script>
+<!-- html5.js for IE less than 9 -->
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script src="../assets/js/respond.min.js"></script>
+<script src="../assets/js/ios-orientationchange-fix.js"></script>
+<script>
+const API_BASE = '../api';
+let passwordVisible = false;
+let webhookKeyVisible = false;
+
+$(function() {
+    loadSession();
+    checkStatus();
+    loadRecentSms();
+    loadHierarchyStats();
+    setWebhookUrl();
+    
+    setInterval(checkStatus, 30000); // Refresh every 30s
+});
+
+function loadSession() {
+    $.get(`${API_BASE}/session.php`, function(res) {
+        if (res.logged_in) {
+            $('#nav-username').text(res.username);
+        } else {
+            window.location.href = '../login.html';
+        }
+    }, 'json');
+}
+
+function setWebhookUrl() {
+    // Get current domain and construct webhook URL
+    const protocol = window.location.protocol;
+    const host = window.location.host;
+    const webhookUrl = `${protocol}//${host}/api/smpp.php?action=receive`;
+    $('#webhook-url').text(webhookUrl);
+}
+
+function checkStatus() {
+    $.get(`${API_BASE}/smpp.php?action=status`, function(res) {
+        if (res.success) {
+            const status = res.status;
+            
+            if (status.jasmin_running) {
+                $('#jasmin-status')
+                    .removeClass('label-info label-important')
+                    .addClass('label-success')
+                    .text('Running');
+            } else {
+                $('#jasmin-status')
+                    .removeClass('label-info label-success')
+                    .addClass('label-important')
+                    .text('Stopped');
+            }
+            
+            $('#smpp-port').text(status.smpp_port);
+            $('#sms-today').text(status.stats.daily);
+            $('#total-received').text(status.config?.total_received || 0);
+        }
+    }, 'json').fail(function() {
+        $('#jasmin-status')
+            .removeClass('label-info label-success')
+            .addClass('label-important')
+            .text('Error');
+    });
+}
+
+function loadRecentSms() {
+    $.get(`${API_BASE}/cdr.php?action=datatable&length=20`, function(res) {
+        const tbody = $('#recent-sms tbody');
+        tbody.empty();
+        
+        if (res.data && res.data.length > 0) {
+            res.data.forEach(function(row) {
+                tbody.append(`
+                    <tr>
+                        <td>${row[0]}</td>
+                        <td>${row[3]}</td>
+                        <td>${row[2]}</td>
+                        <td>${row[1]}</td>
+                        <td>${row[4]}</td>
+                        <td>${row[8]}</td>
+                        <td><span class="label label-success">Delivered</span></td>
+                    </tr>
+                `);
+            });
+        } else {
+            tbody.append('<tr><td colspan="7" class="center">No SMS received yet</td></tr>');
+        }
+    }, 'json');
+}
+
+function loadHierarchyStats() {
+    $.get(`${API_BASE}/dashboard.php?action=stats`, function(res) {
+        if (res.success && res.stats) {
+            const stats = res.stats;
+            
+            // Manager stats
+            $('#mgr-today').text('$' + (stats.today_payout || 0).toFixed(4));
+            $('#mgr-month').text('$' + (stats.month_payout || 0).toFixed(4));
+            $('#mgr-sms').text(stats.today_sms || 0);
+            
+            // Agent stats
+            $('#agent-today').text('$' + ((stats.agent_payouts?.today) || 0).toFixed(4));
+            $('#agent-month').text('$' + ((stats.agent_payouts?.month) || 0).toFixed(4));
+            $('#active-agents').text(stats.total_agents || 0);
+            
+            // Client stats
+            $('#client-today').text('$' + ((stats.client_payouts?.today) || 0).toFixed(4));
+            $('#client-month').text('$' + ((stats.client_payouts?.month) || 0).toFixed(4));
+            $('#active-clients').text(stats.total_clients || 0);
+        }
+    }, 'json');
+}
+
+function togglePassword() {
+    passwordVisible = !passwordVisible;
+    if (passwordVisible) {
+        $('#smpp-password').text('Supplier$Pass2026!');
+    } else {
+        $('#smpp-password').text('••••••••••••');
+    }
+}
+
+function toggleWebhookKey() {
+    webhookKeyVisible = !webhookKeyVisible;
+    if (webhookKeyVisible) {
+        $('#webhook-key').text('MBC_WEBHOOK_SECURE_2026');
+    } else {
+        $('#webhook-key').text('••••••••••••');
+    }
+}
+
+function logout() {
+    $.post(`${API_BASE}/session.php`, {action: 'logout'}, function() {
+        window.location.href = '../login.html';
+    });
+}
+</script>
+</body>
+</html>

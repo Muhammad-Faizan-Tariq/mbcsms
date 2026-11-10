@@ -1,0 +1,453 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MBC SMS | Dashboard</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="IPRN Billing and Softswitch">
+<meta name="author" content="Inteliotech">
+<!-- styles -->
+<link href="../assets/css/bootstrap.css" rel="stylesheet">
+<link href="../assets/css/select2.css" rel="stylesheet">
+<link href="../assets/css/jquery-ui-1.8.16.custom.css" rel="stylesheet">
+<link href="../assets/css/jquery.jqplot.css" rel="stylesheet">
+<link href="../assets/css/prettify.css" rel="stylesheet">
+<link href="../assets/css/elfinder.min.css" rel="stylesheet">
+<link href="../assets/css/elfinder.theme.css" rel="stylesheet">
+<link href="../assets/css/fullcalendar.css" rel="stylesheet">
+<link href="../assets/js/plupupload/jquery.plupload.queue/css/jquery.plupload.queue.css" rel="stylesheet">
+<link href="../assets/css/styles.css" rel="stylesheet">
+<link href="../assets/css/bootstrap-responsive.css" rel="stylesheet">
+<link href="../assets/css/icons-sprite.css" rel="stylesheet">
+<link id="themes" href="../assets/css/themes.css" rel="stylesheet">
+<link id="themes" href="../assets/css/theme-dark.css" rel="stylesheet">
+<link href="../assets/css/sidebar-enhanced.css" rel="stylesheet">
+<!--[if IE 7]>
+<link rel="stylesheet" type="text/css" href="../assets/css/ie/ie7.css" />
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" type="text/css" href="../assets/css/ie/ie8.css" />
+<![endif]-->
+<!--[if IE 9]>
+<link rel="stylesheet" type="text/css" href="../assets/css/ie/ie9.css" />
+<![endif]-->
+<!--fav and touch icons -->
+<link rel="shortcut icon" href="../assets/ico/favicon.ico">
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner top-nav">
+    <div class="container-fluid">
+      <div class="branding">
+	<div class="logo"> <img src='../assets/img/mbc-logo.svg' style='height:40px; width:auto;' alt='MBC SMS' /> </div>
+      </div>
+      <ul class="nav pull-right">
+        
+        <li class="dropdown"><a data-toggle="dropdown" class="dropdown-toggle" href="#">testme <span class="alert-noty"></span><i class="white-icons admin_user"></i><b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="Notifications.html"><i class="icon-envelope"></i> Notifications</a></li>
+            <li><a href="Profile.html"><i class="icon-briefcase"></i> My Profile</a></li>
+            <li><a href="MyActivity.html"><i class="icon-file"></i> My Activity</a></li>
+            <li class="divider"></li>
+            <li><a href="../login.html"><i class="icon-off"></i><strong> Logout</strong></a></li>
+          </ul>
+        </li>
+      </ul>
+      <button data-target=".nav-collapse" data-toggle="collapse" class="btn btn-navbar" type="button"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+      <div class="nav-collapse collapse">
+        <ul class="nav">
+			<li><a href="SMSDashboard.html"><span class="color-icons computer_imac"></span> Dashboard</a></li>
+			<!--<li><a href="MyNumbers" id='numbers'><span class="color-icons sound_co"></span> My Voice Numbers</a></li>-->
+			<li><a href="MySMSNumbers.html" id='smsnumbers'><span class="color-icons envelope_co"></span> My SMS Numbers</a></li>
+			<!--<li><a href="ActiveCalls" id='activecalls'><span class="color-icons mobile_phone_co"></span> Active Calls</a></li>-->
+			<li><a href="SMSCDRStats.html" id='smsstats'><span class="color-icons chart_pie_co"></span> SMS Reports</a></li>
+			<!--<li><a href="CDRReports" id='cdr'><span class="color-icons chart_line_co"></span> Detailed Reports</a></li>
+			<li><a href="CDRStats" id='stats'><span class="color-icons chart_curve_co"></span> Summary Reports</a></li>
+			<li><a href="NumberStats" id='nstats'><span class="color-icons chart_bar_co"></span> Numbers Stats</a></li>
+			<li><a href="TestPanel" id='testpanel'><span class="color-icons feed_co"></span> Voice Test Panel</a></li>-->
+			<li><a href="SMSTestPanel.html" id='smstestpanel'><span class="color-icons feed_co"></span> SMS Test Panel</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="sidebar">
+  <div class='lgxx'>
+		Welcome testme<br />
+	<b>Client Panel</b><br />2026-05-06 12:56:23  </div>
+  <ul class="side-nav accordion_mnu collapsible">
+    <li><a href="SMSDashboard.html"><span class="color-icons computer_imac"></span> Dashboard</a></li>
+	<!--<li><a href="MyNumbers" id='numbers'><span class="color-icons sound_co"></span> My Voice Numbers</a></li>-->
+	<li><a href="MySMSNumbers.html" id='smsnumbers'><span class="color-icons envelope_co"></span> My SMS Numbers</a></li>
+	<!--<li><a href="ActiveCalls" id='activecalls'><span class="color-icons mobile_phone_co"></span> Active Calls</a></li>-->
+	<li><a href="SMSCDRStats.html" id='smsstats'><span class="color-icons chart_pie_co"></span> SMS Reports</a></li>
+	<!--<li><a href="CDRReports" id='cdr'><span class="color-icons chart_line_co"></span> Detailed Reports</a></li>
+	<li><a href="CDRStats" id='stats'><span class="color-icons chart_curve_co"></span> Summary Reports</a></li>
+	<li><a href="NumberStats" id='nstats'><span class="color-icons chart_bar_co"></span> Numbers Stats</a></li>
+	<li><a href="TestPanel" id='testpanel'><span class="color-icons feed_co"></span> Voice Test Panel</a></li>-->
+	<li><a href="SMSTestPanel.html" id='smstestpanel'><span class="color-icons feed_co"></span> SMS Test Panel</a></li>
+    
+  <div id="side-accordion">
+	<div class="accordion-group">
+      <div class="accordion-header"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#side-accordion" href="#collapseTwo"></div>
+      <div id="collapseTwo" class="collapse">
+        <div class="accordion-content">
+          <div class="site-stat">
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="main-content">
+  <div class="container-fluid">
+    <ul class="breadcrumb">
+      <li><a href="#">Home</a><span class="divider">&raquo;</span></li>
+      <li class="active">Dashboard</li>
+    </ul>
+    
+    <div class="dashboard-widget">
+      <div class="row-fluid">
+        <div class="span2">
+          <div class="dashboard-wid-wrap">
+            <div class="dashboard-wid-content"> <a href="SMSDashboard.html"> <i class="dashboard-icons-colors graphic_design_sl"></i> <span class="dasboard-icon-title">Dashboard</span> </a> </div>
+          </div>
+        </div>
+		<div class="span2">
+          <div class="dashboard-wid-wrap">
+            <div class="dashboard-wid-content"> <a href="MySMSNumbers.html"> <i class="dashboard-icons-colors phone_sl"></i> <span class="dasboard-icon-title">My Numbers</span> </a> </div>
+          </div>
+        </div>
+        
+        <div class="span2">
+          <div class="dashboard-wid-wrap">
+            <div class="dashboard-wid-content"> <a href="SMSTestPanel.html"> <i class="dashboard-icons-colors statistics_sl"></i> <span class="dasboard-icon-title">SMS Test Panel</span> </a> </div>
+          </div>
+        </div>
+        <div class="span2">
+          <div class="dashboard-wid-wrap">
+            <div class="dashboard-wid-content"> <a href="SMSCDRStats.html"> <i class="dashboard-icons-colors current_work_sl"></i> <span class="dasboard-icon-title">Statistics</span> </a> </div>
+          </div>
+        </div>
+        <div class="span2">
+          <div class="dashboard-wid-wrap">
+            <div class="dashboard-wid-content"> <a href="Profile.html"> <i class="dashboard-icons-colors suppliers_sl"></i> <span class="dasboard-icon-title">Profile</span> </a> </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+   
+	    <div class="row-fluid">
+      <div class="span4 ">
+        <div class="stat-block">
+          <ul>
+            <li class="stat-graph" id="weekly-visit">8,4,6,5,9,10</li>
+            <li class="stat-count"><span>Today SMS</span><span>0 </span></li>
+            <li class="stat-percent"><span><img src="../assets/img/green-arrow.png" width="20" height="20" alt="Increased"></span><span class="label-green"></span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="span4 ">
+        <div class="stat-block">
+          <ul>
+            <li class="stat-graph" id="new-visits">200,300,1000,900,200,900,500</li>
+            <li class="stat-count"><span>Last 7 Day SMS</span><span>0 </span></li>
+            <li class="stat-percent"><span><img src="../assets/img/green-arrow.png" width="20" height="20" alt="Decrease"></span><span class="label-red"></span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="span4 ">
+        <div class="stat-block">
+          <ul>
+            <li class="stat-graph" id="unique-visits">200,300,500,200,300,500,1000</li>
+            <li class="stat-count"><span>Last 30 Day SMS</span><span>0 </span></li>
+            <li class="stat-percent"><span><img src="../assets/img/green-arrow.png" width="20" height="20" alt="Increased"></span><span class="label-green"></span></li>
+          </ul>
+        </div>
+      </div>
+      
+    </div>
+    <div class="row-fluid">
+      <div class="span9">
+        <div class="index-graph">
+          <div class="chart-block">
+            <div id="chart1"> </div>
+          </div>
+        </div>
+      </div>
+      <div class="span3">
+				
+		
+        <div class="summary">
+          <ul>
+            <li><span class="summary-icon"><img src="../assets/img/items.png" width="36" height="36" alt="New Ranges"></span><span class="count">259</span><span class="summary-title"> New Ranges</span></li>
+<!--            <li><span class="summary-icon"><img src="../assets/img/posts.png" width="36" height="36" alt="New Numbers"></span><span class="count"></span><span class="summary-title"> New Numbers</span></li>-->
+            <!--<li><span class="summary-icon"><img src="../assets/img/orders.png" width="36" height="36" alt="Estimated Profit"></span><span class="count"></span><span class="summary-title"> Estimated Profit</span></li>-->
+            <li><span class="summary-icon"><img src="../assets/img/complete.png" width="36" height="36" alt="SMS This Month"></span><span class="count">0</span><span class="summary-title"> SMS This Month</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="row-fluid">
+      <div class="span6 ">
+        <div class="widget-block">
+          <div class="widget-head">
+            <h5><i class="black-icons money"></i> News & Notifications</h5>
+          </div>
+          <div class="widget-content">
+            <div class="widget-box">
+              <table class="table order-tbl" id='dbdt'>
+                <thead>
+                  <tr>
+                    <th> Date </th>
+                    <th> Headline </th>
+                    <th class="center"> News </th>
+                  </tr>
+                </thead>
+                <tbody>
+				<tr><td>2026-02-13 16:17:25</td><td>IMO-METHOD</td><td>Guys Send OTps On IMO USing The Nepal Numbers</td></tr>                 
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="span6 ">
+        <div class="widget-block">
+          <div class="widget-head">
+            <h5><i class="black-icons users"></i> Recent Ranges</h5>
+          </div>
+          <div class="widget-content">
+            
+            <div class="widget-box">
+              <table class="table user-tblx" id='dbdt1'>
+                <thead>
+                  <tr>
+                    <th class="center"> Range </th>
+                    <th> Test Number </th>
+                    
+                  </tr>
+                </thead>
+                <tbody>
+				<tr><td>Mongolia 9769700xxxx</td><td>97697000000</td></tr><tr><td>Mauritania LX 2222626xxxx</td><td>22226260000</td></tr><tr><td>Mauritania LX 2222615xxxx</td><td>22226150000</td></tr><tr><td>Mauritania LX 2222077xxxx</td><td>22220770000</td></tr><tr><td>Lesotho Econet 2666227xxxx</td><td>26662270000</td></tr><tr><td>Lesotho Econet 2666218xxxx</td><td>26662180000</td></tr><tr><td>Lesotho Econet 2666215xxxx</td><td>26662150000</td></tr><tr><td>Kenya Nairobi 25420208xxxx</td><td>254202080000</td></tr><tr><td>Kenya Nairobi 25420203xxxx</td><td>254202030000</td></tr><tr><td>Kenya Nairobi 25420200xxxx</td><td>254202000000</td></tr><tr><td>Phillipines LX 05May</td><td>639923367882</td></tr><tr><td>Vietnam 8470213xxxx</td><td>84702130000</td></tr><tr><td>Vietnam 8470212xxxx</td><td>84702120000</td></tr><tr><td>Papua New Guinea LX 05May</td><td>67572857887</td></tr><tr><td>Algeria LX 04May</td><td>213562471898</td></tr><tr><td>Angola LX 04May</td><td>244919542865</td></tr><tr><td>Malaysia Celcom LX 04May</td><td>60136407331</td></tr><tr><td>Malaysia Digi LX 04May</td><td>601133195508</td></tr><tr><td>Cambodia LX 04May</td><td>85576289413</td></tr><tr><td>Malaysia Maxis LX 04May</td><td>60182390236</td></tr>                 </tbody>
+			  </table>
+			</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<script>
+localStorage.clear();
+</script>
+<script src="../assets/js/jquery.js"></script>
+<script src="../assets/js/jquery-ui-1.8.16.custom.min.js"></script>
+<script src="../assets/js/bootstrap.js"></script>
+<script src="../assets/js/select2.js"></script>
+<script src="../assets/js/prettify.js"></script>
+<script src="../assets/js/jquery.nicescroll.min.js"></script>
+<script src="../assets/js/accordion.jquery.js"></script>
+<script src="../assets/js/vaidation.jquery.js"></script>
+<script src="../assets/js/jquery-dynamic-form.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/jquery.dataTables.min.js"></script>
+<script src="../assets/js/ColVis.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/buttons.flash.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/jszip.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/pdfmake.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/vfs_fonts.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/buttons.html5.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/buttons.print.min.js"></script>
+
+<script src="../assets/js/custom-script.js"></script>
+<!-- html5.js for IE less than 9 -->
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script src="../assets/js/respond.min.js"></script>
+<script src="../assets/js/ios-orientationchange-fix.js"></script>
+<script src="../assets/js/jquery-migrate-1.4.1.js"></script>
+<script src="../assets/js/jquery.ui.touch-punch.js"></script> 
+<script src="../assets/js/excanvas.min.js"></script> 
+<script src="../assets/js/jquery.jqplot.min.js"></script> 
+<script src="../assets/js/jquery.sparkline.min.js"></script>
+<script src="../assets/js/chart/jqplot.highlighter.min.js"></script> 
+<script src="../assets/js/chart/jqplot.cursor.min.js"></script> 
+<script src="../assets/js/chart/jqplot.dateAxisRenderer.min.js"></script> 
+<script>
+$(function(){
+  $(".line-chart").sparkline('html', {
+    type: 'line',
+    width: '100'+'%',
+    height: '80',
+    lineColor: '#e57002',
+    fillColor: '#efd8c9',
+    lineWidth: 2,
+    spotColor: '#a02800',
+    minSpotColor: '#309308',
+    maxSpotColor: '#037aa5',
+    spotRadius: 3,
+    drawNormalOnTop: false
+    });
+	
+	$(".pie-chart").sparkline('html',{
+    type: 'pie',
+    height: '80',
+    sliceColors: ['#038ac2','#dc3912','#ff9900','#109618','#66aa00','#dd4477','#0099c6','#990099 ']});
+	
+	$(".bar-chart").sparkline('html', {
+    type: 'bar',
+    height: '80',
+    barWidth: 8,
+    barSpacing: 2,
+    barColor: '#0077bc',
+    negBarColor: '#ea5409',
+    zeroColor: '#ff0000'});
+	
+	 $('.composite-line').sparkline('html', { fillColor: false, width: '100'+'%',
+	  height: '80',
+	   lineWidth: 2,
+	   spotRadius: 3 });
+   $('.composite-bar').sparkline('html', { type: 'bar',
+     height: '80',
+    barWidth: 8,
+    barSpacing: 2,
+	 barColor: '#aaf' });
+    $('.composite-bar').sparkline([4,1,5,7,9,9,8,7,6,6,4,7,8,4,3,2,2,5,6,7], 
+        { composite: true, fillColor: false, lineColor: 'red' });
+
+	
+	
+
+    $("#new-visits").sparkline('html', {
+        type: 'bar',
+        barColor: '#3366cc',
+        height: '25'
+    });
+
+    $("#weekly-sales").sparkline('html', {
+        type: 'bar',
+        barColor: '#3366cc',
+        height: '25'
+    });
+    $("#unique-visits").sparkline('html', {
+        type: 'bar',
+        barColor: '#3366cc',
+        height: '25'
+    });
+    $("#weekly-visit").sparkline('html', {
+        type: 'bar',
+        barColor: '#3366cc',
+        height: '25'
+    });
+    $('#weekly-visit').sparkline([4, 1, 5, 7, 9, 9], {
+        composite: true,
+        fillColor: false,
+        lineColor: 'red'
+    });
+	  var line1=[['2026-05-05',0],['2026-05-06',0]];
+  var plot1 = $.jqplot('chart1', [line1], {
+      title:'SMS LAST 7 DAYS',
+      axes:{
+        xaxis:{
+          renderer:$.jqplot.DateAxisRenderer,
+          tickOptions:{
+            formatString:'%b&nbsp;%#d'
+          }
+        },
+        yaxis:{
+          tickOptions:{
+            formatString:'%.0f'
+            }
+        }
+      },
+	  seriesDefaults: {
+        show: true,     // wether to render the series.
+        xaxis: 'xaxis', // either 'xaxis' or 'x2axis'.
+        yaxis: 'yaxis', // either 'yaxis' or 'y2axis'.
+        color: '#196795',      // CSS color spec to use for the line.  Determined automatically.
+        lineWidth: 3, // Width of the line in pixels.
+        shadow: false  // show shadow or not.
+	  },
+      highlighter: {
+        show: true,
+        sizeAdjust: 7.5
+      },
+	   grid: {
+            background: '#fff',
+            drawBorder: false,
+            shadow: false,
+            gridLineColor: '#ccc',
+            gridLineWidth: 1
+        },
+      cursor: {
+        show: false
+      }
+  });
+  
+	$('#dbdt').dataTable({
+        "sPaginationType": "full_numbers",
+		"bStateSave": true,
+            "aLengthMenu": [
+                [5, 10, 20],
+                [5, 10, 20] // change per page values here
+            ],
+        "iDisplayLength": 5,
+        "oLanguage": {
+            "sLengthMenu": "<span class='lenghtMenu'> _MENU_</span><span class='lengthLabel'>Show Records:</span>",
+        },
+        dom: 'p'
+    });
+	$('#dbdt1').dataTable({
+        "sPaginationType": "full_numbers",
+		"bStateSave": true,
+            "aLengthMenu": [
+                [5, 10, 20],
+                [5, 10, 20] // change per page values here
+            ],
+        "iDisplayLength": 5,
+        "oLanguage": {
+            "sLengthMenu": "<span class='lenghtMenu'> _MENU_</span><span class='lengthLabel'>Show Records:</span>",
+        },
+        dom: 'p'
+    });
+    $("div.tbl-tools-searchbox select").addClass('tbl_length');
+});
+</script>
+</body>
+</html>

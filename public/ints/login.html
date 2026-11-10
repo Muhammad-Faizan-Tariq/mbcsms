@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>MBC SMS | Login</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="assets/ico/favicon.ico"/>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		
+		body {
+			font-family: 'Inter', sans-serif;
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: #04060f;
+			overflow: hidden;
+		}
+
+		/* Rain Canvas */
+		#rain-canvas {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			z-index: 0;
+			pointer-events: none;
+		}
+
+		/* Vignette overlay */
+		.vignette {
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			background: radial-gradient(circle at center, transparent 30%, rgba(2, 4, 10, 0.8) 120%);
+			z-index: 1;
+		}
+
+		/* Login Container */
+		.login-container {
+			position: relative;
+			z-index: 10;
+			width: 420px;
+			background: rgba(255, 255, 255, 0.95);
+			backdrop-filter: blur(20px);
+			border-radius: 20px;
+			box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3);
+			overflow: hidden;
+			animation: fadeInUp 0.7s ease both;
+		}
+
+		.login-container.explode {
+			animation: explodeFlash 1.2s ease forwards;
+		}
+
+		@keyframes fadeInUp {
+			from { opacity: 0; transform: translateY(30px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
+		@keyframes explodeFlash {
+			0% { transform: scale(1); filter: brightness(1); }
+			20% { transform: scale(1.02); filter: brightness(2); }
+			100% { transform: scale(1); filter: brightness(1); }
+		}
+
+		/* Wave Animation */
+		.wave-container {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 200%;
+			height: 100px;
+			pointer-events: none;
+			z-index: 1;
+		}
+
+		.wave {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23667eea' fill-opacity='0.15' d='M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+			background-size: 50% 100%;
+			background-repeat: repeat-x;
+			animation: waveMove 12s linear infinite;
+		}
+
+		.wave2 {
+			animation: waveMove 18s linear infinite reverse;
+			opacity: 0.5;
+			bottom: 10px;
+		}
+
+		@keyframes waveMove {
+			0% { transform: translateX(0); }
+			100% { transform: translateX(-50%); }
+		}
+
+		/* Logo Circle */
+		.logo-circle {
+			width: 80px;
+			height: 80px;
+			border-radius: 50%;
+			background: #fff;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 40px auto 20px;
+			box-shadow: 0 8px 30px rgba(102, 126, 234, 0.25);
+			position: relative;
+			overflow: hidden;
+			border: 3px solid #667eea;
+		}
+
+		.logo-circle img {
+			width: 60px;
+			height: 60px;
+			object-fit: contain;
+		}
+
+		.logo-circle::before {
+			content: '';
+			position: absolute;
+			inset: -50%;
+			background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%);
+			animation: shimmer 3s infinite;
+		}
+
+		@keyframes shimmer {
+			0% { transform: translateX(-100%) rotate(45deg); }
+			100% { transform: translateX(100%) rotate(45deg); }
+		}
+
+		/* Header */
+		.login-header {
+			text-align: center;
+			margin-bottom: 30px;
+			position: relative;
+			z-index: 2;
+		}
+
+		.login-header h2 {
+			font-size: 24px;
+			color: #2d3436;
+			font-weight: 700;
+			margin-bottom: 8px;
+		}
+
+		.login-header p {
+			color: #636e72;
+			font-size: 14px;
+			font-weight: 400;
+		}
+
+		/* Form */
+		.login-form {
+			padding: 0 40px 40px;
+			position: relative;
+			z-index: 2;
+		}
+
+		/* Floating Label Input */
+		.input-group {
+			position: relative;
+			margin-bottom: 24px;
+		}
+
+		.input-group input {
+			width: 100%;
+			padding: 16px 16px 16px 50px;
+			background: #f1f4f9;
+			border: 2px solid transparent;
+			border-radius: 12px;
+			font-size: 15px;
+			font-family: 'Inter', sans-serif;
+			color: #2d3436;
+			transition: all 0.3s ease;
+		}
+
+		.input-group input:focus {
+			outline: none;
+			border-color: #667eea;
+			background: #fff;
+			box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+		}
+
+		.input-group .icon {
+			position: absolute;
+			left: 16px;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 20px;
+			height: 20px;
+			fill: #b2bec3;
+			transition: fill 0.3s;
+		}
+
+		.input-group input:focus ~ .icon {
+			fill: #667eea;
+		}
+
+		.input-group label {
+			position: absolute;
+			top: 50%;
+			left: 50px;
+			transform: translateY(-50%);
+			font-size: 15px;
+			color: #b2bec3;
+			pointer-events: none;
+			transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			background: transparent;
+			padding: 0 5px;
+		}
+
+		.input-group input:focus + label,
+		.input-group input:not(:placeholder-shown) + label {
+			top: -8px;
+			left: 12px;
+			font-size: 11px;
+			background: #fff;
+			color: #667eea;
+			font-weight: 600;
+		}
+
+		/* Captcha */
+		.captcha-box {
+			background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+			padding: 16px 20px;
+			border-radius: 12px;
+			margin-bottom: 24px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 15px;
+			border: 1px solid rgba(102, 126, 234, 0.15);
+		}
+
+		.captcha-question {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			flex: 1;
+		}
+
+		.captcha-icon {
+			width: 36px;
+			height: 36px;
+			flex-shrink: 0;
+		}
+
+		.captcha-text {
+			font-size: 14px;
+			color: #2d3436;
+			font-weight: 500;
+		}
+
+		.captcha-text span {
+			font-weight: 700;
+			color: #667eea;
+		}
+
+		.captcha-input-wrap {
+			position: relative;
+		}
+
+		.captcha-box input {
+			border: 2px solid #667eea;
+			border-radius: 10px;
+			padding: 10px 15px;
+			width: 70px;
+			text-align: center;
+			font-size: 18px;
+			font-weight: 700;
+			outline: none;
+			background: #fff;
+			color: #2d3436;
+			transition: all 0.3s ease;
+		}
+
+		.captcha-box input:focus {
+			border-color: #764ba2;
+			box-shadow: 0 0 0 4px rgba(118, 75, 162, 0.15);
+			transform: scale(1.05);
+		}
+
+		/* Submit Button */
+		.submit-btn {
+			width: 100%;
+			padding: 16px;
+			border: none;
+			border-radius: 12px;
+			background: transparent;
+			color: #667eea;
+			font-family: 'Inter', sans-serif;
+			font-size: 16px;
+			font-weight: 600;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			position: relative;
+			overflow: hidden;
+			border: 2px solid #667eea;
+			z-index: 1;
+		}
+
+		.submit-btn::before {
+			content: '';
+			position: absolute;
+			top: 100%;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+			z-index: -1;
+			border-radius: 10px;
+		}
+
+		.submit-btn:hover {
+			color: white;
+			transform: translateY(-2px);
+			box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+		}
+
+		.submit-btn:hover::before {
+			top: 0;
+		}
+
+		.submit-btn:active {
+			transform: scale(0.98);
+		}
+
+		/* Liquid bubbles */
+		.submit-btn::after {
+			content: '';
+			position: absolute;
+			width: 20px;
+			height: 20px;
+			background: rgba(255, 255, 255, 0.3);
+			border-radius: 50%;
+			bottom: -30px;
+			left: 20%;
+			transition: all 0.5s ease;
+			z-index: -1;
+		}
+
+		.submit-btn:hover::after {
+			bottom: 60%;
+			left: 80%;
+			width: 30px;
+			height: 30px;
+			opacity: 0;
+		}
+
+		/* Sound Toggle */
+		.sound-toggle {
+			position: fixed;
+			bottom: 24px;
+			left: 24px;
+			z-index: 50;
+			width: 48px;
+			height: 48px;
+			border-radius: 50%;
+			background: rgba(255,255,255,0.08);
+			border: 1px solid rgba(255,255,255,0.15);
+			color: #94a3b8;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			backdrop-filter: blur(10px);
+		}
+
+		.sound-toggle:hover {
+			background: rgba(255,255,255,0.15);
+			color: #fff;
+		}
+
+		.sound-toggle svg {
+			width: 22px;
+			height: 22px;
+		}
+
+		/* Lightning Flash */
+		.lightning-flash {
+			position: fixed;
+			inset: 0;
+			background: rgba(160, 210, 255, 0);
+			pointer-events: none;
+			z-index: 5;
+			transition: background 0.1s ease;
+		}
+
+		.lightning-flash.active {
+			background: rgba(160, 210, 255, 0.15);
+		}
+
+		.lightning-flash.mega {
+			background: rgba(160, 210, 255, 0.4);
+		}
+
+		/* Mobile Responsive */
+		@media screen and (max-width: 480px) {
+			.login-container {
+				width: 95%;
+				max-width: 380px;
+				margin: 10px;
+				border-radius: 16px;
+			}
+			
+			.login-form {
+				padding: 0 25px 30px;
+			}
+			
+			.logo-circle {
+				width: 70px;
+				height: 70px;
+				margin: 30px auto 15px;
+			}
+			
+			.logo-circle img {
+				width: 50px;
+				height: 50px;
+			}
+			
+			.login-header h2 {
+				font-size: 20px;
+			}
+			
+			.login-header p {
+				font-size: 13px;
+			}
+			
+			.input-group input {
+				padding: 14px 14px 14px 45px;
+				font-size: 14px;
+			}
+			
+			.input-group .icon {
+				left: 14px;
+				width: 18px;
+				height: 18px;
+			}
+			
+			.captcha-box {
+				flex-direction: column;
+				gap: 12px;
+				padding: 12px;
+			}
+			
+			.captcha-icon {
+				width: 30px;
+				height: 30px;
+			}
+			
+			.captcha-text {
+				font-size: 13px;
+			}
+			
+			.captcha-box input {
+				width: 60px;
+				padding: 8px 12px;
+				font-size: 16px;
+			}
+			
+			.submit-btn {
+				padding: 14px;
+				font-size: 15px;
+			}
+			
+			.sound-toggle {
+				width: 40px;
+				height: 40px;
+				bottom: 16px;
+				left: 16px;
+			}
+			
+			.sound-toggle svg {
+				width: 18px;
+				height: 18px;
+			}
+		}
+
+		@media screen and (max-width: 360px) {
+			.login-container {
+				width: 98%;
+				border-radius: 12px;
+			}
+			
+			.login-form {
+				padding: 0 20px 25px;
+			}
+			
+			.logo-circle {
+				width: 60px;
+				height: 60px;
+				margin: 25px auto 12px;
+			}
+			
+			.logo-circle img {
+				width: 45px;
+				height: 45px;
+			}
+			
+			.login-header h2 {
+				font-size: 18px;
+			}
+			
+			.input-group input {
+				padding: 12px 12px 12px 40px;
+				font-size: 13px;
+			}
+		}
+	</style>
+</head>
+<body>
+	<canvas id="rain-canvas"></canvas>
+	<div class="vignette"></div>
+	<div class="lightning-flash" id="lightning-flash"></div>
+
+	<div class="login-container" id="login-container">
+		<div class="wave-container">
+			<div class="wave"></div>
+			<div class="wave wave2"></div>
+		</div>
+
+		<form action='signin' method='post' class="login-form" id="login-form">
+			<div class="logo-circle">
+				<img src='assets/ico/favicon.ico' alt='MBC SMS' />
+			</div>
+
+			<div class="login-header">
+				<h2>Welcome Back</h2>
+				<p>Sign in to your MBC SMS account</p>
+			</div>
+
+			<div class="input-group">
+				<input type="text" name="username" id="username" placeholder=" " required>
+				<label for="username">Username</label>
+				<svg class="icon" viewBox="0 0 24 24">
+					<path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+				</svg>
+			</div>
+
+			<div class="input-group">
+				<input type="password" name="password" id="password" placeholder=" " required>
+				<label for="password">Password</label>
+				<svg class="icon" viewBox="0 0 24 24">
+					<path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/>
+				</svg>
+			</div>
+
+			<div class="captcha-box">
+				<div class="captcha-question">
+					<svg class="captcha-icon" viewBox="0 0 24 24" fill="none">
+						<circle cx="12" cy="12" r="10" stroke="#667eea" stroke-width="2" fill="rgba(102,126,234,0.1)"/>
+						<path d="M9 9h.01M15 9h.01" stroke="#667eea" stroke-width="2" stroke-linecap="round"/>
+						<path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#667eea" stroke-width="2" stroke-linecap="round"/>
+						<circle cx="12" cy="12" r="3" fill="#764ba2" opacity="0.3"/>
+						<text x="12" y="13" text-anchor="middle" font-size="5" font-weight="bold" fill="#667eea">?</text>
+					</svg>
+					<div class="captcha-text">
+					Solve: <span id="captcha-question">3 + 0 = ?</span>
+				</div>
+				</div>
+				<div class="captcha-input-wrap">
+					<input type='number' name='capt' id="captcha-input" placeholder="?" required min="0" max="18">
+				</div>
+			</div>
+
+			<button type="submit" class="submit-btn">Login</button>
+		</form>
+	</div>
+
+	<!-- Sound Toggle Button -->
+	<button class="sound-toggle" id="sound-toggle" title="Toggle rain sound">
+		<svg id="sound-off-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<path d="M11 5L6 9H2v6h4l5 4V5z"/>
+			<line x1="23" y1="9" x2="17" y2="15"/>
+			<line x1="17" y1="9" x2="23" y2="15"/>
+		</svg>
+		<svg id="sound-on-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+			<path d="M11 5L6 9H2v6h4l5 4V5z"/>
+			<path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+		</svg>
+	</button>
+
+	<script>
+		// Rain Animation with Canvas
+		(function() {
+			const canvas = document.getElementById('rain-canvas');
+			const ctx = canvas.getContext('2d');
+			
+			let soundEnabled = false;
+			let audioCtx = null;
+			let rainGain = null;
+
+			// Raindrop layers for 3D depth
+			const layers = {
+				back: { drops: [], max: 400, color: 'rgba(180, 200, 220, 0.12)', width: 1, speed: 8, length: 12 },
+				mid: { drops: [], max: 250, color: 'rgba(180, 200, 220, 0.25)', width: 1.5, speed: 14, length: 20 },
+				front: { drops: [], max: 80, color: 'rgba(200, 220, 255, 0.5)', width: 2, speed: 25, length: 35 }
+			};
+			
+			let splashes = [];
+			let lightningFlash = 0;
+			let lastLightning = Date.now();
+
+			function resize() {
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;
+				
+				Object.keys(layers).forEach(key => {
+					const layer = layers[key];
+					layer.drops = [];
+					for (let i = 0; i < layer.max; i++) {
+						layer.drops.push({
+							x: Math.random() * canvas.width,
+							y: Math.random() * canvas.height - canvas.height,
+							length: layer.length * (0.8 + Math.random() * 0.4),
+							speed: layer.speed * (0.9 + Math.random() * 0.2)
+						});
+					}
+				});
+			}
+
+			function initAudio() {
+				if (audioCtx) return;
+				const AudioContext = window.AudioContext || window.webkitAudioContext;
+				audioCtx = new AudioContext();
+
+				// Noise buffer for rain
+				const bufferSize = audioCtx.sampleRate * 2;
+				const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+				const output = noiseBuffer.getChannelData(0);
+				for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
+
+				const rainSource = audioCtx.createBufferSource();
+				rainSource.buffer = noiseBuffer;
+				rainSource.loop = true;
+
+				const rainFilter = audioCtx.createBiquadFilter();
+				rainFilter.type = 'lowpass';
+				rainFilter.frequency.value = 600;
+
+				rainGain = audioCtx.createGain();
+				rainGain.gain.value = 0;
+
+				// Wind LFO
+				const windLFO = audioCtx.createOscillator();
+				windLfo.frequency.value = 0.1;
+				const windMod = audioCtx.createGain();
+				windMod.gain.value = 0.15;
+				windLfo.connect(windMod);
+				windMod.connect(rainGain.gain);
+				windLfo.start();
+
+				rainSource.connect(rainFilter);
+				rainFilter.connect(rainGain);
+				rainGain.connect(audioCtx.destination);
+				rainSource.start();
+			}
+
+			function triggerThunder(volume) {
+				if (!audioCtx) return;
+				const bufferSize = audioCtx.sampleRate * 2.5;
+				const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+				const output = noiseBuffer.getChannelData(0);
+				for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
+
+				const thunderSource = audioCtx.createBufferSource();
+				thunderSource.buffer = noiseBuffer;
+
+				const thunderFilter = audioCtx.createBiquadFilter();
+				thunderFilter.type = 'lowpass';
+				thunderFilter.frequency.value = 250;
+
+				const thunderGain = audioCtx.createGain();
+				thunderGain.gain.setValueAtTime(0, audioCtx.currentTime);
+				thunderGain.gain.linearRampToValueAtTime(volume * 1.2, audioCtx.currentTime + 0.1);
+				thunderGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2.2);
+
+				thunderSource.connect(thunderFilter);
+				thunderFilter.connect(thunderGain);
+				thunderGain.connect(audioCtx.destination);
+				thunderSource.start();
+			}
+
+			function draw() {
+				ctx.globalCompositeOperation = 'source-over';
+				ctx.fillStyle = 'rgba(4, 6, 15, 0.35)';
+				ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+				const now = Date.now();
+
+				// Lightning
+				if (now - lastLightning > 5000 && Math.random() < 0.006) {
+					lightningFlash = 1.0;
+					lastLightning = now;
+					if (soundEnabled) triggerThunder(0.4 + Math.random() * 0.4);
+				}
+
+				if (lightningFlash > 0) {
+					const flashEl = document.getElementById('lightning-flash');
+					flashEl.classList.add('active');
+					setTimeout(() => flashEl.classList.remove('active'), 100);
+					lightningFlash -= 0.03;
+				}
+
+				const floorY = canvas.height - (canvas.height * 0.05);
+				const windOffset = 2;
+
+				ctx.lineCap = 'round';
+
+				Object.keys(layers).forEach(key => {
+					const layer = layers[key];
+					ctx.beginPath();
+					ctx.strokeStyle = layer.color;
+					ctx.lineWidth = layer.width;
+
+					for (let i = 0; i < layer.drops.length; i++) {
+						const drop = layer.drops[i];
+						drop.y += drop.speed;
+						drop.x += windOffset * (layer.width * 0.3);
+
+						ctx.moveTo(drop.x, drop.y);
+						ctx.lineTo(drop.x - windOffset * (layer.width * 0.3), drop.y - drop.length);
+
+						if (drop.y > floorY + Math.random() * 50) {
+							if (key !== 'back' && Math.random() > 0.6) {
+								splashes.push({
+									x: drop.x,
+									y: drop.y,
+									radius: 1,
+									maxRadius: layer.width * 4,
+									opacity: key === 'front' ? 0.5 : 0.25,
+									age: 0
+								});
+							}
+							drop.y = -100 - Math.random() * 200;
+							drop.x = Math.random() * canvas.width * 1.5 - (canvas.width * 0.25);
+							drop.speed = layer.speed * (0.9 + Math.random() * 0.2);
+						}
+					}
+					ctx.stroke();
+				});
+
+				// Splashes
+				for (let i = splashes.length - 1; i >= 0; i--) {
+					const s = splashes[i];
+					ctx.beginPath();
+					ctx.ellipse(s.x, s.y, s.radius * 1.5, s.radius * 0.4, 0, 0, Math.PI * 2);
+					ctx.strokeStyle = `rgba(200, 220, 255, ${s.opacity * (1 - s.age)})`;
+					ctx.lineWidth = 1;
+					ctx.stroke();
+					s.radius += 0.6;
+					s.age += 0.04;
+					if (s.age >= 1) splashes.splice(i, 1);
+				}
+
+				requestAnimationFrame(draw);
+			}
+
+			// Sound Toggle
+			const soundToggle = document.getElementById('sound-toggle');
+			const soundOnIcon = document.getElementById('sound-on-icon');
+			const soundOffIcon = document.getElementById('sound-off-icon');
+
+			soundToggle.addEventListener('click', () => {
+				if (!soundEnabled) {
+					initAudio();
+					if (audioCtx.state === 'suspended') audioCtx.resume();
+					if (rainGain) rainGain.gain.setTargetAtTime(0.3, audioCtx.currentTime, 0.5);
+					soundEnabled = true;
+					soundOnIcon.style.display = 'block';
+					soundOffIcon.style.display = 'none';
+				} else {
+					if (audioCtx && rainGain) {
+						rainGain.gain.setValueAtTime(0, audioCtx.currentTime);
+						setTimeout(() => { if (audioCtx.state !== 'suspended') audioCtx.suspend(); }, 50);
+					}
+					soundEnabled = false;
+					soundOnIcon.style.display = 'none';
+					soundOffIcon.style.display = 'block';
+				}
+			});
+
+			// Load captcha on page load
+			let captchaAnswer = 3;
+			async function loadCaptcha() {
+				try {
+					const response = await fetch('/ints/signin?action=captcha', {credentials: 'include'});
+					const data = await response.json();
+					if (data.success) {
+						document.getElementById('captcha-question').textContent = data.question;
+						captchaAnswer = data.num1 + data.num2;
+					}
+				} catch(e) {
+					// Fallback to random captcha
+					const num1 = Math.floor(Math.random() * 10);
+					const num2 = Math.floor(Math.random() * 10);
+					document.getElementById('captcha-question').textContent = num1 + ' + ' + num2 + ' = ?';
+					captchaAnswer = num1 + num2;
+				}
+			}
+			loadCaptcha();
+
+			// Form submit - connect to backend API
+			document.getElementById('login-form').addEventListener('submit', async function(e) {
+				e.preventDefault();
+				
+				const username = document.getElementById('username').value;
+				const password = document.getElementById('password').value;
+				const captcha = document.querySelector('input[name="capt"]').value;
+				
+				try {
+					const response = await fetch('/ints/signin', {
+						method: 'POST',
+						headers: {'Content-Type': 'application/json'},
+						credentials: 'include',
+						body: JSON.stringify({
+							username: username,
+							password: password,
+							capt: parseInt(captcha)
+						})
+					});
+					
+					const data = await response.json();
+					
+					if (data.success) {
+						const container = document.getElementById('login-container');
+						const flashEl = document.getElementById('lightning-flash');
+						container.classList.add('explode');
+						flashEl.classList.add('mega');
+						if (soundEnabled) triggerThunder(1.5);
+						
+						setTimeout(() => {
+							window.location.href = data.redirect;
+						}, 800);
+					} else {
+						alert(data.error || 'Login failed');
+						loadCaptcha(); // Refresh captcha
+					}
+				} catch(e) {
+					alert('Connection error. Please try again.');
+					loadCaptcha();
+				}
+			});
+
+			window.addEventListener('resize', resize);
+			resize();
+			draw();
+		})();
+	</script>
+	<div style="position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); text-align: center; z-index: 100;">
+		<p style="margin: 0; color: rgba(255,255,255,0.4); font-size: 11px;">
+			Developed by <a href="https://t.me/RobertBotDev" target="_blank" style="color: rgba(255,255,255,0.6); font-weight: 500;">@RobertBotDev</a>
+		</p>
+	</div>
+</body>
+</html>

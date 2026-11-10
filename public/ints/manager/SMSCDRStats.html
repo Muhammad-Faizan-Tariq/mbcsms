@@ -1,0 +1,514 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>MBC SMS | SMS CDR Stats</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="IPRN Billing and Softswitch">
+<meta name="author" content="Inteliotech">
+<!-- styles -->
+<link href="../assets/css/bootstrap.css" rel="stylesheet">
+<link href="../assets/css/select2.css" rel="stylesheet">
+<link href="../assets/css/jquery-ui-1.8.16.custom.css" rel="stylesheet">
+<link href="../assets/css/jquery.jqplot.css" rel="stylesheet">
+<link href="../assets/css/prettify.css" rel="stylesheet">
+<link href="../assets/css/elfinder.min.css" rel="stylesheet">
+<link href="../assets/css/elfinder.theme.css" rel="stylesheet">
+<link href="../assets/css/fullcalendar.css" rel="stylesheet">
+<link href="../assets/js/plupupload/jquery.plupload.queue/css/jquery.plupload.queue.css" rel="stylesheet">
+<link href="../assets/css/styles.css" rel="stylesheet">
+<link href="../assets/css/bootstrap-responsive.css" rel="stylesheet">
+<link href="../assets/css/icons-sprite.css" rel="stylesheet">
+<link id="themes" href="../assets/css/themes.css" rel="stylesheet">
+<link id="themes" href="../assets/css/theme-dark.css" rel="stylesheet">
+<link href="../assets/css/sidebar-enhanced.css" rel="stylesheet">
+<!--[if IE 7]>
+<link rel="stylesheet" type="text/css" href="../assets/css/ie/ie7.css" />
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" type="text/css" href="../assets/css/ie/ie8.css" />
+<![endif]-->
+<!--[if IE 9]>
+<link rel="stylesheet" type="text/css" href="../assets/css/ie/ie9.css" />
+<![endif]-->
+<!--fav and touch icons -->
+<link rel="shortcut icon" href="../assets/ico/favicon.ico">
+<!-- Missing datetimepicker CSS - using CDN -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" />
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner top-nav">
+    <div class="container-fluid">
+      <div class="branding">
+	<div class="logo"> <img src='../assets/img/mbc-logo.svg' style='height:40px; width:auto;' alt='MBC SMS' /> </div>
+      </div>
+      <ul class="nav pull-right">
+	
+        <li class="dropdown"><a data-toggle="dropdown" class="dropdown-toggle" href="#">Shazi0908 <span class="alert-noty"></span><i class="white-icons admin_user"></i><b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="Notifications.html"><i class="icon-envelope"></i> Notifications </a></li>
+            <li><a href="Profile.html"><i class="icon-briefcase"></i> My Profile</a></li>
+            <li><a href="MyActivity.html"><i class="icon-file"></i> My Activity</a></li>
+            <li><a href="UserActivity.html"><i class="icon-pencil"></i> Users Activity</a></li>
+            <li class="divider"></li>
+            <li><a href="../login.html"><i class="icon-off"></i><strong> Logout</strong></a></li>
+          </ul>
+        </li>
+      </ul>
+      <button data-target=".nav-collapse" data-toggle="collapse" class="btn btn-navbar" type="button"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+      <div class="nav-collapse collapse">
+        <ul class="nav">
+			<li><a href="SMSDashboard.html"><span class="color-icons computer_imac"></span> Dashboard</a></li>
+			<!--<li id='main'><a href="#"><span class="color-icons sound_co"></span> IPRN Voice Module</a>
+			  <ul class="acitem">
+				<li><a href="Ranges" id='ranges'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>All Ranges</a></li>
+				<li><a href="MyNumbers" id='numbers'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>My Numbers</a></li>
+				<li><a href="RateCard" id='ratecard'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>RateCard</a></li>
+			<li><a href="AccessList" id='accesslist'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Access List</a></li>
+				<li><a href="AutoAccessList" id='autoaccesslist'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Auto Access List</a></li>
+			  </ul>
+			</li>-->
+			 <li id='main'><a href="#"><span class="color-icons envelope_co"></span> IPRN SMS Module</a>
+			  <ul class="acitem">
+				<li><a href="SMSRanges.html" id='smsranges'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Ranges</a></li>
+				<li><a href="MySMSNumbers.html" id='smsnumbers'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>My SMS Numbers</a></li>
+				<li><a href="SMSRateCard.html" id='smsratecard'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS RateCard</a></li>
+				<li><a href="SMSBulkAllocations.html" id='smsbulk'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Bulk Allocations</a></li>
+			  </ul>
+			</li>
+		 
+			<!--<li><a href="AudioFiles" id='audiofile'><span class="color-icons music_co"></span> Audio Files</a></li>-->
+			<li><a href="NewsMaster.html" id='newsmaster'><span class="color-icons cup"></span> News for Agents</a></li>
+			<li><a href="Agents.html" id='clients'><span class="color-icons user_co"></span> My Agents</a></li>
+			<!--<li><a href="ActiveCalls" id='activecalls'><span class="color-icons mobile_phone_co"></span> Active Calls</a></li>
+			<li id='main'><a href="#"><span class="color-icons chart_line_co"></span> Voice CDR & Statistics</a>
+			  <ul class="acitem">
+				<li><a href="CDRReports" id='cdr'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Detailed Reports</a></li>
+				<li><a href="CDRStats" id='stats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Summary Reports</a></li>
+				<li><a href="ClientStats" id='cstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Client Stats</a></li>
+				<li><a href="RangeStats" id='rstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Range Stats</a></li>
+				<li><a href="NumberStats" id='nstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Number Stats</a></li>
+				
+			  </ul>
+			</li>-->
+			<li id='main'><a href="#"><span class="color-icons chart_bar_co"></span> SMS CDR & Statistics</a>
+			  <ul class="acitem">
+				<li><a href="SMSCDRReports.html" id='smscdr'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Detailed SMS Reports</a></li>
+				<li><a href="SMSCDRStats.html" id='smsstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Summary SMS Reports</a></li>
+				<li><a href="SMSAgentStats.html" id='smscstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Agent SMS Stats</a></li>
+				<li><a href="SMSRangeStats.html" id='smsrstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Range Stats</a></li>
+				<li><a href="SMSNumberStats.html" id='smsnstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Number Stats</a></li>
+				
+			  </ul>
+			</li>
+			<li><a href="CreditNotes.html" id='creditnotes'><span class="color-icons briefcase_co"></span> My Credit Notes</a></li>
+			<li><a href="Account.html" id='paymentrequests'><span class="color-icons money_dollar_co"></span> My Account</a></li>
+			<!--<li><a href="PaymentRequests" id='paymentrequests'><span class="color-icons money_dollar_co"></span> Payment Requests</a></li>
+			<li><a href="BankAccounts" id='bankaccounts'><span class="color-icons bank_clr"></span> Bank Accounts</a></li>
+			
+			
+			<li id='main'><a href="#"><span class="color-icons statistics_sl"></span> Statements</a>
+			  <ul class="acitem">
+				<li><a href='Statements?ecuid=Qg==' id=''><span class='sidenav-icon'><span class='sidenav-link-color'></span></span>USD Statements</a></li><li><a href='Statements?ecuid=Qw==' id=''><span class='sidenav-icon'><span class='sidenav-link-color'></span></span>EUR Statements</a></li><li><a href='Statements?ecuid=RA==' id=''><span class='sidenav-icon'><span class='sidenav-link-color'></span></span>GBP Statements</a></li>			  </ul>
+			</li>-->
+			<!--<li><a href="TestPanel" id='testpanel'><span class="color-icons feed_co"></span> Voice Test Panel</a></li>-->
+			<li><a href="SMSTestPanel.html" id='smstestpanel'><span class="color-icons feed_co"></span> SMS Test Panel</a></li>
+			<li><a href="API.html" id='api'><span class="color-icons cup"></span> API</a></li>
+          
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="sidebar">
+  <div class='lgxx'>
+	<!--<div style='border:1px solid #CFCFCF; border-radius:50%; width:120px; height:120px; margin:auto; text-align:center;'><img src='../assets/img/lg.png' style='max-width:110px; max-height:110px; margin-top:10px;' /></div>-->
+	Welcome Shazi0908<br />
+	<b>Manager Panel</b><br />2026-05-06 12:49:33	<!--<br />API Token : ZIaAi3pOWEFJSVBHQ1NW-->
+  </div>
+  <ul class="side-nav accordion_mnu collapsible">
+    <li><a href="SMSDashboard.html"><span class="color-icons computer_imac"></span> Dashboard</a></li>
+    <!--<li id='main'><a href="#"><span class="color-icons sound_co"></span> IPRN Voice Module</a>
+      <ul class="acitem">
+        <li><a href="Ranges" id='ranges'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>All Ranges</a></li>
+        <li><a href="MyNumbers" id='numbers'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>My Numbers</a></li>
+        <li><a href="RateCard" id='ratecard'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>RateCard</a></li>
+	<li><a href="AccessList" id='accesslist'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Access List</a></li>
+        <li><a href="AutoAccessList" id='autoaccesslist'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Auto Access List</a></li>
+      </ul>
+    </li>-->
+     <li id='main'><a href="#"><span class="color-icons envelope_co"></span> IPRN SMS Module</a>
+      <ul class="acitem">
+        <li><a href="SMSRanges.html" id='smsranges'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Ranges</a></li>
+        <li><a href="MySMSNumbers.html" id='smsnumbers'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>My SMS Numbers</a></li>
+	<li><a href="SMSRateCard.html" id='smsratecard'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS RateCard</a></li>
+	<li><a href="SMSBulkAllocations.html" id='smsbulk'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Bulk Allocations</a></li>
+      </ul>
+    </li>
+	<!--<li><a href="TestPanel" id='testpanel'><span class="color-icons feed_co"></span> Voice Test Panel</a></li>-->
+	<li><a href="SMSTestPanel.html" id='smstestpanel'><span class="color-icons feed_co"></span> SMS Test Panel</a></li>
+	<li><a href="Agents.html" id='clients'><span class="color-icons user_co"></span> My Agents</a></li>
+	<!--<li><a href="ActiveCalls" id='activecalls'><span class="color-icons mobile_phone_co"></span> Active Calls</a></li>-->
+    <!--<li id='main'><a href="#"><span class="color-icons chart_line_co"></span> Voice CDR & Statistics</a>
+      <ul class="acitem">
+        <li><a href="CDRReports" id='cdr'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Detailed Reports</a></li>
+        <li><a href="CDRStats" id='stats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Summary Reports</a></li>
+        <li><a href="ClientStats" id='cstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Client Stats</a></li>
+        <li><a href="RangeStats" id='rstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Range Stats</a></li>
+        <li><a href="NumberStats" id='nstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Number Stats</a></li>
+        
+      </ul>
+    </li>-->
+	<li id='main'><a href="#"><span class="color-icons chart_bar_co"></span> SMS CDR & Statistics</a>
+      <ul class="acitem">
+        <li><a href="SMSCDRReports.html" id='smscdr'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Detailed SMS Reports</a></li>
+        <li><a href="SMSCDRStats.html" id='smsstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Summary SMS Reports</a></li>
+        <li><a href="SMSAgentStats.html" id='smscstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>Agent SMS Stats</a></li>
+        <li><a href="SMSRangeStats.html" id='smsrstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Range Stats</a></li>
+        <li><a href="SMSNumberStats.html" id='smsnstats'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Number Stats</a></li>
+        
+      </ul>
+    </li>
+	<li><a href="CreditNotes.html" id='creditnotes'><span class="color-icons briefcase_co"></span> My Credit Notes</a></li>
+	<li><a href="Account.html" id='paymentrequests'><span class="color-icons money_dollar_co"></span> My Account</a></li>
+<!--	<li><a href="PaymentRequests" id='paymentrequests'><span class="color-icons money_dollar_co"></span> Payment Requests</a></li>
+	<li><a href="BankAccounts" id='bankaccounts'><span class="color-icons bank_clr"></span> Bank Accounts</a></li>
+	
+	
+	<li id='main'><a href="#"><span class="color-icons statistics_sl"></span> Statements</a>
+      <ul class="acitem">
+		<li><a href='Statements?ecuid=Qg==' id=''><span class='sidenav-icon'><span class='sidenav-link-color'></span></span>USD Statements</a></li><li><a href='Statements?ecuid=Qw==' id=''><span class='sidenav-icon'><span class='sidenav-link-color'></span></span>EUR Statements</a></li><li><a href='Statements?ecuid=RA==' id=''><span class='sidenav-icon'><span class='sidenav-link-color'></span></span>GBP Statements</a></li>      </ul>
+    </li>-->
+	<!--<li><a href="AudioFiles" id='audiofile'><span class="color-icons music_co"></span> Audio Files</a></li>-->
+	<li><a href="NewsMaster.html" id='newsmaster'><span class="color-icons cup"></span> News for Agents</a></li>
+        <li><a href="API.html" id='api'><span class="color-icons cup"></span> API</a></li>
+  </ul>
+  <div id="side-accordion">
+	<div class="accordion-group">
+      <div class="accordion-header"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#side-accordion" href="#collapseTwo"></div>
+      <div id="collapseTwo" class="collapse">
+        <div class="accordion-content">
+          <div class="site-stat">
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="main-content">
+	<div class="container-fluid">
+		<ul class="breadcrumb">
+			<li><a href="SMSDashboard.html">Home</a><span class="divider">&raquo;</span></li>
+			<li class="active">SMS CDR Stats </li>
+		</ul>
+				<div class='row-fluid'>
+			<div class='span12'>
+				<p>Here You can view all the SMS stats.</p>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span12 filter">
+					<div class="widget-content">
+						<form action='' method='post' id='fform'>
+						<div class='row-fluid'>
+							<span class='span2' style='position:relative;' >
+								
+								<input type='text' class="form-control" id='datetimepicker1' name='fdate1' value='2026-05-06 00:00:00' />
+							</span>
+							<span class='span2' style='position:relative;'>
+								<input type='text' class="form-control" id='datetimepicker2' name='fdate2' value='2026-05-06 23:59:59' />
+							</span>
+							
+							<span class='span2'>
+								<select id="frange" name='frange' class="form-control" placeholder="Filter Range" style='width:100%;'>
+									<option value=''></option>
+								</select>
+							</span>
+							<span class='span2'>
+								<select id="fagent" name='fagent' class="form-control" placeholder="Filter Agent" style='width:100%;'>
+									<option value=''></option>
+								</select>
+							</span>
+							<span class='span2'>
+								<input name='fnum' type='text' class="form-control" placeholder="Search Number" value='' style='width:100%;'>
+							</span>
+							<span class='span2'>
+								<input name='fcli' type='text' class="form-control" placeholder="Search CLI" value='' style='width:100%;'>
+							</span>
+						</div>
+						<div class='row-fluid'>
+							<span class='span1'><h5>Group By : </h5></span>
+							<span class='span7'>
+								<input type='checkbox' name='fgdate' value='1' > Date &nbsp; 
+								<input type='checkbox' name='fgmonth' value='1' > Month &nbsp; 
+								<input type='checkbox' name='fgrange' value='1' > Range &nbsp; 
+								<input type='checkbox' name='fgagent' value='1' > Agent &nbsp; 
+								<input type='checkbox' name='fgnumber' value='1' > Number &nbsp; 
+								<input type='checkbox' name='fgcli' value='1' > CLI &nbsp; 
+								
+							</span>
+							<span class='span4'>
+								<input type='submit' class="btn btn-warning" id='sbutton' data='1' value='Export Report' />
+								<input type='submit' class="btn btn-primary" id='sbutton' data='2' value='Show Report' />
+							</span>
+						</div>
+						</form>
+				</div>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span12">
+				<div class="widget-block">
+					<div class="widget-head">
+						<h5>CDR Reports & Stats</h5>
+						<div class="widget-control pull-right" style='padding:10px;'>
+						</div>
+					</div>
+					<div class="widget-content">
+						<div class="widget-box table-responsive">
+														<table class="data-tbl-boxy table table-bordered" id='dt'>
+							<thead>
+								<tr>
+									<th>Date</th>
+									<th>Range</th>
+									<th>Number</th>
+									<th>CLI</th>
+									<th>Agent</th>
+								<th>SMS</th>
+								<th>Currency</th>
+								<th>My Payout</th>
+								<th>Agent Payout</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr><td colspan='9'></td></tr>
+							</tbody>
+							<tfoot>
+								<tr><th>Total SMS<br /><span id='totsms'></span></th><th colspan='3'></th><th></th><th>Currency <br />USD<br />EUR<br />GBP</th><th>My Payout<br /><span id='totusdin'></span><br /><span id='toteurin'></span><br /><span id='totgbpin'></span></th><th>Agent Payout<br /><span id='totusdout'></span><br /><span id='toteurout'></span><br /><span id='totgbpout'></span></th><th>Profit<br /><span id='totusdprofit'></span><br /><span id='toteurprofit'></span><br /><span id='totgbpprofit'></span></th></tr>
+							</tfoot>
+							</table>
+													</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+localStorage.clear();
+</script>
+<script src="../assets/js/jquery.js"></script>
+<script src="../assets/js/jquery-ui-1.8.16.custom.min.js"></script>
+<script src="../assets/js/bootstrap.js"></script>
+<script src="../assets/js/select2.js"></script>
+<script src="../assets/js/prettify.js"></script>
+<script src="../assets/js/jquery.nicescroll.min.js"></script>
+<script src="../assets/js/accordion.jquery.js"></script>
+<script src="../assets/js/vaidation.jquery.js"></script>
+<script src="../assets/js/jquery-dynamic-form.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/jquery.dataTables.min.js"></script>
+<script src="../assets/js/ColVis.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/buttons.flash.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/jszip.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/pdfmake.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/vfs_fonts.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/buttons.html5.min.js"></script>
+<script type="text/javascript" language="javascript" src="../assets/js/buttons.print.min.js"></script>
+
+<script src="../assets/js/custom-script.js"></script>
+<!-- html5.js for IE less than 9 -->
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script src="../assets/js/respond.min.js"></script>
+<script src="../assets/js/ios-orientationchange-fix.js"></script>
+<!-- Missing moment.js and datetimepicker - using CDN -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+<script>
+		if( $.isFunction($.fn.datetimepicker) ){
+		$('#datetimepicker1').datetimepicker({ 
+			format:'YYYY-MM-DD HH:mm:ss'
+		});
+		$('#datetimepicker2').datetimepicker({
+			format:'YYYY-MM-DD HH:mm:ss'
+		});
+			
+		}
+$(function () {
+
+    var dt = $('#dt').dataTable({
+		"fnDrawCallback": function(oSettings) {
+				var aa = $('#dt').dataTable().fnSettings()._;
+				datalength = $('#dt').dataTable().fnGetData().length;
+				data = $('#dt').dataTable().fnGetData();
+				var dt = ""+data[datalength-1];
+				var dtarr = dt.split(",");
+				$("span#totusdin").html(dtarr[0]);
+				$("span#toteurin").html(dtarr[1]);
+				$("span#totgbpin").html(dtarr[2]);
+				$("span#totusdout").html(dtarr[3]);
+				$("span#toteurout").html(dtarr[4]);
+				$("span#totgbpout").html(dtarr[5]);
+				$("span#totusdprofit").html(dtarr[6]);
+				$("span#toteurprofit").html(dtarr[7]);
+				$("span#totgbpprofit").html(dtarr[8]);
+				$("span#totusdprofitp").html(dtarr[9]);
+				$("span#toteurprofitp").html(dtarr[10]);
+				$("span#totgbpprofitp").html(dtarr[11]);
+				$("span#totsms").html(dtarr[12]);
+				$("table#dt tbody tr").last().hide();
+				},
+        "sPaginationType": "full_numbers",
+		"bStateSave": true,
+		"bServerSide": true,
+		"sAjaxSource": "res/data_smscdr.php?fdate1=2026-05-06 00:00:00&fdate2=2026-05-06 23:59:59&frange=&fagent=&fnum=&fcli=&fgdate=&fgmonth=&fgrange=&fgagent=&fgnumber=&fgcli=&fg=0",
+            "aLengthMenu": [
+                [10, 25, 50, 100, 500, -1],
+                [10, 25, 50, 100, 500, "All"] // change per page values here
+            ],
+        "iDisplayLength": 25,
+		"aaSorting": [ [0,'desc'] ],
+				
+				"aoColumns": [
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				{"bSortable": false }
+				],
+		        "oLanguage": {
+            "sLengthMenu": "<span class='lenghtMenu'> _MENU_</span><span class='lengthLabel'>Show Records:</span>",
+        },
+        dom: 'fl<"clear">CBTtip',
+        buttons: [
+			'copy', 'csv', 'excel', 'pdf', 'print'
+		]
+    });
+	
+    $("div.tbl-tools-searchbox select").addClass('tbl_length');
+	
+	$("select#frange").select2({
+		ajax: {
+		url: 'res/aj_smsranges.php',
+		dataType: 'json',
+		data: function (params) {
+			return {
+			q: params.term, // search term
+			max:25,
+			page: params.page || 1
+			};
+		},
+		processResults: function (data) {
+            return {
+                results: $.map(data.results, function (item) {
+                    return {
+                        text: item.title,
+                        //slug: item.slug,
+                        id: item.id
+                    }
+                }),
+				pagination: {
+                    
+                        more: data.pagination.more
+                    }
+                
+            };
+        },
+		cache: true
+		},
+		minimumInputLength: 0,
+		placeholder: "Filter Range"
+		
+		
+	});
+	
+	
+	$("select#fagent").select2({
+		ajax: {
+		url: 'res/aj_agents.php',
+		dataType: 'json',
+		data: function (params) {
+			return {
+			q: params.term, // search term
+			max:25,
+			page: params.page || 1
+			};
+		},
+		processResults: function (data) {
+            return {
+                results: $.map(data.results, function (item) {
+                    return {
+                        text: item.title,
+                        //slug: item.slug,
+                        id: item.id
+                    }
+                }),
+				pagination: {
+                    
+                        more: data.pagination.more
+                    }
+                
+            };
+        },
+		cache: true
+		},
+		minimumInputLength: 0,
+		placeholder: "Filter Agent",
+		
+		
+	});
+	
+			
+	$(document).on("click", "input#sbutton", function(event)
+	{
+		event.preventDefault();
+		var tdata = $(this).attr("data");
+		if(tdata==1) { $("form#fform").attr("action","res/exportsmscdr"); }
+		else { $("form#fform").attr("action",""); }
+		$("form#fform").submit();
+		
+	});
+	$("a#smsstats").parent().parent().attr("style","display:block;");
+	$("a#smsstats").attr("class","active");
+});
+</script>
+</body>
+</html>

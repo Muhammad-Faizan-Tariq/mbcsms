@@ -1,0 +1,14 @@
+<svg width="320" height="72" viewBox="0 0 320 72" fill="none" xmlns="http://www.w3.org/2000/svg" aria-labelledby="logoTitle" role="img">
+  <title id="logoTitle">MBC SMS</title>
+  
+  <!-- Professional Eye Icon -->
+  <ellipse cx="38" cy="36" rx="29" ry="21" fill="#0A1729" stroke="#1E90FF" stroke-width="5"/>
+  <ellipse cx="38" cy="36" rx="21" ry="15.5" fill="#0F2B4D"/>
+  <ellipse cx="38" cy="36" rx="13.5" ry="11.5" fill="#1E90FF"/>
+  <ellipse cx="38" cy="36" rx="6" ry="6" fill="#0A1729"/>
+  <ellipse cx="41" cy="33" rx="2.5" ry="2.5" fill="#87CEFF"/>
+
+  <!-- Text: MBC SMS in one line -->
+  <text x="82" y="48" font-family="Arial Black, Helvetica, sans-serif" font-size="42" font-weight="900" fill="#1E90FF" letter-spacing="-1.5px">MBC</text>
+  <text x="195" y="48" font-family="Arial Black, Helvetica, sans-serif" font-size="42" font-weight="900" fill="#FFFFFF" letter-spacing="-1.5px">SMS</text>
+</svg>

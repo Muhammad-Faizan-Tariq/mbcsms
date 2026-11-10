@@ -1,0 +1,128 @@
+# MBC SMS - Git Ignore File
+
+# ==========================================
+# Environment & Configuration
+# ==========================================
+.env
+.env.local
+.env.production
+*.env
+.env.*
+config/.env
+!.env.example
+
+# Docker
+docker-compose.override.yml
+
+# ==========================================
+# IDE & Editor Files
+# ==========================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.settings/
+.buildpath
+
+# ==========================================
+# OS Generated Files
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ==========================================
+# Logs & Temporary Files
+# ==========================================
+*.log
+*.tmp
+*.temp
+*.cache
+logs/
+tmp/
+temp/
+
+# ==========================================
+# Backup Files
+# ==========================================
+*.bak
+*.backup
+*.old
+*.orig
+
+# ==========================================
+# Database Files (keep schema, ignore data)
+# ==========================================
+*.sql.gz
+*.sql.zip
+database/*.sql.gz
+
+# ==========================================
+# Node.js (if used for frontend tooling)
+# ==========================================
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# ==========================================
+# PHP Composer
+# ==========================================
+vendor/
+composer.lock
+
+# ==========================================
+# Build Output
+# ==========================================
+dist/
+build/
+output/
+
+# ==========================================
+# Test Coverage
+# ==========================================
+coverage/
+.coverage
+phpunit.xml
+
+# ==========================================
+# Sensitive Files
+# ==========================================
+*.pem
+*.key
+*.crt
+*.p12
+credentials.json
+secrets.json
+config/smpp-credentials.php
+config/smpp-*.php
+
+# ==========================================
+# Old Frontend Folders (deprecated)
+# ==========================================
+# These are kept for reference but should not be deployed
+# Manager_frontend/
+# Agent_frontend/
+# client_frontend/
+
+# ==========================================
+# Scripts Output
+# ==========================================
+scripts/*.log
+scripts/output/
+
+# ==========================================
+# Development Files
+# ==========================================
+*.md
+!README.md
+!nextplan.md
+!docs/*.md
