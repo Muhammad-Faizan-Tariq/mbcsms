@@ -38,6 +38,12 @@ switch ($method) {
             case 'requests':
                 getMyRequests();
                 break;
+            case 'self_ranges':
+                getSelfRanges();
+                break;
+            case 'self_setting':
+                getSelfSetting();
+                break;
             default:
                 listNumbers();
         }
@@ -58,6 +64,12 @@ switch ($method) {
                 break;
             case 'reject':
                 rejectRequest();
+                break;
+            case 'self_allocate':
+                selfAllocate();
+                break;
+            case 'self_setting':
+                setSelfSetting();
                 break;
             default:
                 jsonResponse(['error' => 'Invalid action'], 400);
@@ -670,4 +682,214 @@ function rejectRequest() {
     logActivity($userId, 'request_rejected', "Rejected request ID: $requestId");
     
     jsonResponse(['success' => true, 'message' => 'Request rejected']);
+}
+
+
+// =====================================================================
+// SELF ALLOCATION (agents and clients take numbers themselves,
+// no manager approval). Manager can switch it on/off.
+// =====================================================================
+
+// Max numbers one user may hold per range (country). Extra space comes from the manager.
+function selfAllocLimit($role) {
+    $env = $role === 'agent' ? getenv('SELF_ALLOC_LIMIT_AGENT') : getenv('SELF_ALLOC_LIMIT_CLIENT');
+    if ($env !== false && (int)$env > 0) return (int)$env;
+    return $role === 'agent' ? 2000 : 100;
+}
+
+function selfAllocHeld($userId, $rangeId) {
+    global $db;
+    return (int)$db->query(
+        "SELECT COUNT(*) c FROM sms_numbers WHERE range_id = ? AND assigned_to = ? AND status = 'assigned'",
+        [$rangeId, $userId]
+    )->fetch()['c'];
+}
+
+/**
+ * Manager that controls the caller's self-allocation setting.
+ */
+function selfAllocManagerId() {
+    global $db, $userId, $role;
+    if ($role === 'manager') {
+        return $userId;
+    }
+    // walk up the parent chain until we hit the manager
+    $id = $userId;
+    for ($i = 0; $i < 5; $i++) {
+        $row = $db->query("SELECT id, role, parent_id FROM users WHERE id = ?", [$id])->fetch();
+        if (!$row) break;
+        if ($row['role'] === 'manager') return (int)$row['id'];
+        if (!$row['parent_id']) break;
+        $id = $row['parent_id'];
+    }
+    // fall back to the first manager
+    $row = $db->query("SELECT id FROM users WHERE role = 'manager' ORDER BY id LIMIT 1")->fetch();
+    return $row ? (int)$row['id'] : 0;
+}
+
+function isSelfAllocEnabled($managerId) {
+    global $db;
+    $row = $db->query(
+        "SELECT config_value FROM api_config WHERE manager_id = ? AND config_key = 'self_allocation'",
+        [$managerId]
+    )->fetch();
+    // enabled unless the manager explicitly switched it off
+    return !$row || $row['config_value'] !== '0';
+}
+
+function getSelfSetting() {
+    global $role;
+    $enabled = isSelfAllocEnabled(selfAllocManagerId());
+    jsonResponse(['success' => true, 'enabled' => $enabled, 'role' => $role, 'limit_per_range' => selfAllocLimit($role)]);
+}
+
+function setSelfSetting() {
+    global $db, $userId, $role;
+    if ($role !== 'manager') {
+        jsonResponse(['error' => 'Only managers can change this setting'], 403);
+    }
+    $input = getJsonInput();
+    $enabled = !empty($input['enabled']) ? '1' : '0';
+    $db->query(
+        "INSERT INTO api_config (manager_id, config_key, config_value) VALUES (?, 'self_allocation', ?)
+         ON DUPLICATE KEY UPDATE config_value = VALUES(config_value)",
+        [$userId, $enabled]
+    );
+    logActivity($userId, 'self_allocation_setting', 'Self allocation ' . ($enabled === '1' ? 'enabled' : 'disabled'));
+    jsonResponse(['success' => true, 'enabled' => $enabled === '1']);
+}
+
+/**
+ * Ranges the caller can take numbers from, with rates and availability.
+ */
+function getSelfRanges() {
+    global $db, $userId, $role;
+    if (!in_array($role, ['agent', 'client'])) {
+        jsonResponse(['error' => 'Only agents and clients can use self allocation'], 403);
+    }
+    $managerId = selfAllocManagerId();
+    $limit = selfAllocLimit($role);
+    $rows = $db->query(
+        "SELECT r.id, r.range_name, r.prefix, r.currency, r.payout_1_1, r.payout_7_1, r.payout_7_7, r.payout_30_45,
+                r.available_numbers,
+                (SELECT COUNT(*) FROM sms_numbers n WHERE n.range_id = r.id AND n.assigned_to = ? AND n.status = 'assigned') AS my_count
+         FROM sms_ranges r
+         WHERE r.status = 'active' AND r.manager_id = ? AND r.available_numbers > 0
+         ORDER BY r.range_name",
+        [$userId, $managerId]
+    )->fetchAll();
+    foreach ($rows as &$r) {
+        $r['my_count'] = (int)$r['my_count'];
+        $r['limit'] = $limit;
+        $r['remaining'] = max(0, $limit - $r['my_count']);
+    }
+    unset($r);
+    jsonResponse([
+        'success' => true,
+        'enabled' => isSelfAllocEnabled($managerId),
+        'limit_per_range' => $limit,
+        'data' => $rows
+    ]);
+}
+
+/**
+ * Allocate numbers straight to the caller (agent or client).
+ */
+function selfAllocate() {
+    global $db, $userId, $role;
+
+    if (!in_array($role, ['agent', 'client'])) {
+        jsonResponse(['error' => 'Only agents and clients can use self allocation'], 403);
+    }
+
+    $managerId = selfAllocManagerId();
+    if (!isSelfAllocEnabled($managerId)) {
+        jsonResponse(['error' => 'Self allocation is disabled. Please send a number request instead.'], 403);
+    }
+
+    $input = getJsonInput();
+    if (empty($input)) {
+        $input = $_POST;
+    }
+
+    $rangeId = (int)($input['range_id'] ?? 0);
+    $quantity = (int)($input['quantity'] ?? 0);
+    $payTerm = $input['pay_term'] ?? '1/1';
+
+    if (!$rangeId || $quantity < 1) {
+        jsonResponse(['error' => 'Range and quantity are required'], 400);
+    }
+    if (!in_array($payTerm, ['1/1', '7/1', '7/7', '30/45'], true)) {
+        jsonResponse(['error' => 'Invalid pay term'], 400);
+    }
+
+    $payoutColumn = ['1/1' => 'payout_1_1', '7/1' => 'payout_7_1', '7/7' => 'payout_7_7', '30/45' => 'payout_30_45'][$payTerm];
+
+    $db->beginTransaction();
+    try {
+        // lock the range so two people can't take the same numbers
+        $range = $db->query(
+            "SELECT * FROM sms_ranges WHERE id = ? AND status = 'active' AND manager_id = ? FOR UPDATE",
+            [$rangeId, $managerId]
+        )->fetch();
+        if (!$range) {
+            $db->rollBack();
+            jsonResponse(['error' => 'Range not found or not active'], 404);
+        }
+
+        // per-range cap: release some numbers to free up space, or ask the manager for extra
+        $limit = selfAllocLimit($role);
+        $held = selfAllocHeld($userId, $rangeId);
+        if ($held + $quantity > $limit) {
+            $db->rollBack();
+            $free = max(0, $limit - $held);
+            jsonResponse(['error' => "Limit reached for this range: you hold $held of $limit numbers" .
+                ($free > 0 ? " (you can take $free more)" : '') .
+                ". Remove some numbers to free up space, or ask the manager for extra numbers."], 400);
+        }
+
+        $rate = (float)($range[$payoutColumn] ?: $range['payout_1_1']);
+
+        $numbers = $db->query(
+            "SELECT id FROM sms_numbers WHERE range_id = ? AND status = 'available' AND is_test = 0
+             ORDER BY id LIMIT " . $quantity . " FOR UPDATE",
+            [$rangeId]
+        )->fetchAll();
+
+        if (count($numbers) < $quantity) {
+            $db->rollBack();
+            jsonResponse(['error' => 'Only ' . count($numbers) . ' numbers available in this range'], 400);
+        }
+
+        foreach ($numbers as $n) {
+            $db->query(
+                "UPDATE sms_numbers SET assigned_to = ?, assigned_at = NOW(), status = 'assigned', pay_term = ?, payout_rate = ?
+                 WHERE id = ? AND status = 'available'",
+                [$userId, $payTerm, $rate, $n['id']]
+            );
+        }
+
+        $db->query(
+            "UPDATE sms_ranges SET available_numbers = GREATEST(available_numbers - ?, 0) WHERE id = ?",
+            [$quantity, $rangeId]
+        );
+
+        $db->commit();
+    } catch (Exception $e) {
+        $db->rollBack();
+        error_log('selfAllocate failed: ' . $e->getMessage());
+        jsonResponse(['error' => 'Failed to allocate numbers'], 500);
+    }
+
+    logActivity($userId, 'self_allocation', "Self-allocated $quantity numbers from range: " . $range['range_name']);
+    createNotification($managerId, 'Self Allocation', "$quantity numbers self-allocated from range " . $range['range_name'], 'info');
+
+    jsonResponse([
+        'success' => true,
+        'message' => "$quantity numbers allocated to your account",
+        'quantity' => $quantity,
+        'pay_term' => $payTerm,
+        'payout_rate' => $rate,
+        'currency' => $range['currency']
+    ]);
 }

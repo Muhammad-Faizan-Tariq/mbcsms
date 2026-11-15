@@ -121,7 +121,8 @@ ALTER TABLE sms_cdr
 ADD COLUMN IF NOT EXISTS smpp_message_id VARCHAR(50) NULL COMMENT 'Message ID from SMPP',
 ADD COLUMN IF NOT EXISTS smpp_status ENUM('delivered', 'failed', 'pending') DEFAULT 'delivered',
 ADD COLUMN IF NOT EXISTS connector_id VARCHAR(50) NULL COMMENT 'Jasmin connector ID',
-ADD COLUMN IF NOT EXISTS processed_at DATETIME NULL COMMENT 'When webhook processed this';
+ADD COLUMN IF NOT EXISTS processed_at DATETIME NULL COMMENT 'When webhook processed this',
+ADD COLUMN IF NOT EXISTS agent_payout DECIMAL(10, 6) DEFAULT 0.000000 COMMENT 'Agent override payout';
 
 -- Add indexes for SMPP queries
 CREATE INDEX IF NOT EXISTS idx_smpp_message_id ON sms_cdr(smpp_message_id);

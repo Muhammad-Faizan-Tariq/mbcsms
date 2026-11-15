@@ -59,6 +59,8 @@
       <div class="nav-collapse collapse">
         <ul class="nav">
 			<li><a href="SMSDashboard.html"><span class="color-icons computer_imac"></span> Dashboard</a></li>
+			<li><a href="CLILookup.html" id="clilookup"><span class="color-icons magnifier_co"></span> CLI Lookup</a></li>
+			<li><a href="SelfAllocation.html" id="selfalloc"><span class="color-icons cog_co"></span> Self Allocation</a></li>
 			 <li id='main'><a href="#"><span class="color-icons envelope_co"></span> IPRN SMS Module</a>
 			  <ul class="acitem">
 				<li><a href="SMSRanges.html" id='smsranges'><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Ranges</a></li>
@@ -95,6 +97,8 @@
   </div>
   <ul class="side-nav accordion_mnu collapsible">
     <li><a href="SMSDashboard.html"><span class="color-icons computer_imac"></span> Dashboard</a></li>
+			<li><a href="CLILookup.html" id="clilookup"><span class="color-icons magnifier_co"></span> CLI Lookup</a></li>
+			<li><a href="SelfAllocation.html" id="selfalloc"><span class="color-icons cog_co"></span> Self Allocation</a></li>
     <li id='main'><a href="#"><span class="color-icons envelope_co"></span> IPRN SMS Module</a>
       <ul class="acitem">
         <li><a href="SMSRanges.html"><span class="sidenav-icon"><span class="sidenav-link-color"></span></span>SMS Ranges</a></li>
@@ -203,7 +207,7 @@
                             <table class="table table-bordered table-striped">
                                 <tr>
                                     <th>Host / IP</th>
-                                    <td><code id="smpp-host">185.255.94.89</code></td>
+                                    <td><code id="smpp-host">...</code></td>
                                 </tr>
                                 <tr>
                                     <th>Port</th>
@@ -211,7 +215,7 @@
                                 </tr>
                                 <tr>
                                     <th>System ID</th>
-                                    <td><code id="smpp-system-id">mbc_supplier</code></td>
+                                    <td><code id="smpp-system-id">...</code></td>
                                 </tr>
                                 <tr>
                                     <th>Password</th>
@@ -396,6 +400,8 @@
 const API_BASE = '../api';
 let passwordVisible = false;
 let webhookKeyVisible = false;
+let smppPassword = '';
+let webhookKeySet = false;
 
 $(function() {
     loadSession();
@@ -403,6 +409,7 @@ $(function() {
     loadRecentSms();
     loadHierarchyStats();
     setWebhookUrl();
+    loadSmppConfig();
     
     setInterval(checkStatus, 30000); // Refresh every 30s
 });
@@ -413,6 +420,18 @@ function loadSession() {
             $('#nav-username').text(res.username);
         } else {
             window.location.href = '../login.html';
+        }
+    }, 'json');
+}
+
+function loadSmppConfig() {
+    $.get(`${API_BASE}/smpp.php?action=config`, function(res) {
+        if (res.success) {
+            $('#smpp-host').text(res.config.host);
+            $('#smpp-port-display').text(res.config.port);
+            $('#smpp-system-id').text(res.config.system_id);
+            smppPassword = res.config.password;
+            webhookKeySet = res.config.webhook_key_set;
         }
     }, 'json');
 }
@@ -505,7 +524,7 @@ function loadHierarchyStats() {
 function togglePassword() {
     passwordVisible = !passwordVisible;
     if (passwordVisible) {
-        $('#smpp-password').text('Supplier$Pass2026!');
+        $('#smpp-password').text(smppPassword || '(not set)');
     } else {
         $('#smpp-password').text('••••••••••••');
     }
@@ -514,7 +533,7 @@ function togglePassword() {
 function toggleWebhookKey() {
     webhookKeyVisible = !webhookKeyVisible;
     if (webhookKeyVisible) {
-        $('#webhook-key').text('MBC_WEBHOOK_SECURE_2026');
+        $('#webhook-key').text(webhookKeySet ? 'Set in server .env (SMPP_WEBHOOK_KEY), used internally by the gateway' : 'NOT SET');
     } else {
         $('#webhook-key').text('••••••••••••');
     }

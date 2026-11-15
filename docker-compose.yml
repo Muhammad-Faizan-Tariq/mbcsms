@@ -11,7 +11,8 @@ services:
       - db_data:/var/lib/mysql
       # run once, on first start of an empty volume
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-      - ./database/migrations/smpp_tables.sql:/docker-entrypoint-initdb.d/02-smpp.sql:ro
+      - ./database/migrations/add_pay_term_to_numbers.sql:/docker-entrypoint-initdb.d/02-pay-term.sql:ro
+      - ./database/migrations/smpp_tables.sql:/docker-entrypoint-initdb.d/03-smpp.sql:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
@@ -37,6 +38,14 @@ services:
       APP_DEBUG: "false"
       SALT: ${SALT:-mbc_sms_secure_salt_2024}
       JASMIN_API_URL: ${JASMIN_API_URL:-http://localhost}
+      JASMIN_HOST: jasmin
+      SMPP_WEBHOOK_KEY: ${SMPP_WEBHOOK_KEY:?set SMPP_WEBHOOK_KEY in .env}
+      SMPP_SUPPLIER_USER: ${SMPP_SUPPLIER_USER:-mbc_supplier}
+      SMPP_SUPPLIER_PASS: ${SMPP_SUPPLIER_PASS:?set SMPP_SUPPLIER_PASS in .env}
+      SMPP_PUBLIC_HOST: ${SMPP_PUBLIC_HOST:-localhost}
+      SMPP_PUBLIC_PORT: ${SMPP_PORT:-2775}
+      SELF_ALLOC_LIMIT_CLIENT: ${SELF_ALLOC_LIMIT_CLIENT:-100}
+      SELF_ALLOC_LIMIT_AGENT: ${SELF_ALLOC_LIMIT_AGENT:-2000}
     volumes:
       - ./:/var/www/html/mbc-sms:ro
 
@@ -44,11 +53,72 @@ services:
     image: nginx:1.27-alpine
     restart: unless-stopped
     depends_on: [app]
+    networks:
+      default:
+        aliases:
+          - web.local   # Jasmin only accepts webhook hostnames that contain a dot
     ports:
       - "${HTTP_PORT:-80}:80"
     volumes:
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./:/var/www/html/mbc-sms:ro
 
+  # ---------------- SMPP gateway (Jasmin) ----------------
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3.13-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+
+  jasmin:
+    image: jookies/jasmin:latest
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      REDIS_CLIENT_HOST: redis
+      AMQP_BROKER_HOST: rabbitmq
+      # used by docker/jasmin/mt-interceptor.py
+      MBC_WEBHOOK_URL: http://web.local/api/smpp.php?action=receive&api_key=${SMPP_WEBHOOK_KEY}
+    ports:
+      - "${SMPP_PORT:-2775}:2775"      # suppliers connect here (SMPP)
+    volumes:
+      - jasmin_store:/etc/jasmin/store
+      - ./docker/jasmin:/opt/jasmin-scripts:ro
+    # jCli (8990) and the HTTP API (1401) stay on the internal network only
+
+  jasmin-init:
+    image: python:3.12-alpine
+    depends_on: [jasmin, web]
+    restart: "no"
+    environment:
+      JASMIN_HOST: jasmin
+      SMPP_SUPPLIER_USER: ${SMPP_SUPPLIER_USER:-mbc_supplier}
+      SMPP_SUPPLIER_PASS: ${SMPP_SUPPLIER_PASS}
+      MBC_WEBHOOK_URL: http://web.local/api/smpp.php?action=receive&api_key=${SMPP_WEBHOOK_KEY}
+      SUPPLIER_CLIENT_HOST: ${SUPPLIER_CLIENT_HOST:-}
+      SUPPLIER_CLIENT_PORT: ${SUPPLIER_CLIENT_PORT:-2775}
+      SUPPLIER_CLIENT_USER: ${SUPPLIER_CLIENT_USER:-}
+      SUPPLIER_CLIENT_PASS: ${SUPPLIER_CLIENT_PASS:-}
+    volumes:
+      - ./docker/jasmin/provision.py:/provision.py:ro
+    command: ["python", "-u", "/provision.py"]
+
 volumes:
   db_data:
+  jasmin_store:

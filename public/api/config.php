@@ -79,6 +79,9 @@ function checkRateLimit() {
     
     // Whitelist check
     if (in_array($ip, $rateLimit['whitelist'])) return true;
+
+    // Gateway webhook is high-volume and protected by its own secret key
+    if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'smpp.php' && ($_GET['action'] ?? '') === 'receive') return true;
     
     $cacheFile = sys_get_temp_dir() . '/mbc_rate_' . md5($ip);
     $now = time();

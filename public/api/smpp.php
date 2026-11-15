@@ -1,357 +1,313 @@
 <?php
 /**
- * MBC SMS - SMPP Webhook API
- * Receives incoming SMS from Jasmin SMPP Gateway
- * Processes CDR, calculates payouts, updates balances
+ * MBC SMS - SMPP API
+ *
+ *  POST ?action=receive  (webhook, called by Jasmin for every inbound SMS; key protected)
+ *  GET  ?action=status   (manager)  Jasmin reachable? counters
+ *  GET  ?action=config   (manager)  credentials to give the supplier
+ *  GET  ?action=stats    (any role) SMS counters scoped to the caller
  */
 
 require_once __DIR__ . '/config.php';
 
+// Payout split on every SMS (share of the number's rate)
+const SMPP_AGENT_OVERRIDE = 0.10;    // agent earns 10% extra when a client of theirs gets the SMS
+const SMPP_MANAGER_SHARE  = 0.05;    // manager earns 5%
+
+$db = Database::getInstance();
 $action = $_GET['action'] ?? $_POST['action'] ?? 'receive';
 
-// For receive action, only accept POST requests
-if ($action === 'receive' && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-    jsonResponse(['error' => 'Method not allowed. Use POST for receive action'], 405);
-}
-
-// Verify API key for receive action (Jasmin will call this with API key)
 if ($action === 'receive') {
-    $apiKey = $_SERVER['HTTP_X_API_KEY'] ?? $_GET['api_key'] ?? '';
-    $validApiKey = getenv('SMPP_WEBHOOK_KEY') ?: 'MBC_WEBHOOK_SECURE_2026';
-
-    if ($apiKey !== $validApiKey) {
-        jsonResponse(['error' => 'Invalid API key'], 401);
-    }
+    handleReceive();
+    exit;
 }
 
-// Get JSON input
-$input = getJsonInput();
-if (empty($input)) {
-    $input = array_merge($_GET, $_POST);
+// everything else needs a logged-in session
+session_name(SESSION_NAME);
+session_start();
+if (empty($_SESSION['logged_in'])) {
+    jsonResponse(['error' => 'Unauthorized'], 401);
 }
+$userId = $_SESSION['user_id'];
+$role = $_SESSION['role'];
 
 switch ($action) {
-    case 'receive':
-        receiveSms($input);
-        break;
     case 'status':
-        // Require authentication for status
-        requireAuth();
+        requireManager();
         getSmppStatus();
         break;
+    case 'config':
+        requireManager();
+        getSmppConfig();
+        break;
     case 'stats':
-        // Require authentication for stats
-        requireAuth();
         getSmppStats();
         break;
     default:
         jsonResponse(['error' => 'Invalid action'], 400);
 }
 
+function requireManager() {
+    global $role;
+    if ($role !== 'manager') {
+        jsonResponse(['error' => 'Manager access required'], 403);
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Webhook                                                             */
+/* ------------------------------------------------------------------ */
+
+function webhookKey() {
+    $key = getenv('SMPP_WEBHOOK_KEY');
+    return ($key !== false && $key !== '') ? $key : null;
+}
+
+function handleReceive() {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST' && $_SERVER['REQUEST_METHOD'] !== 'GET') {
+        jsonResponse(['error' => 'Method not allowed'], 405);
+    }
+
+    $expected = webhookKey();
+    $given = $_SERVER['HTTP_X_API_KEY'] ?? $_GET['api_key'] ?? $_POST['api_key'] ?? '';
+    if ($expected === null || !hash_equals($expected, (string)$given)) {
+        jsonResponse(['error' => 'Invalid API key'], 401);
+    }
+
+    $data = getJsonInput();
+    if (empty($data)) {
+        $data = array_merge($_GET, $_POST);
+    }
+
+    // Jasmin posts: id, from, to, content, origin-connector ...
+    $fromJasmin = isset($data['origin-connector']) || (isset($data['id']) && isset($data['content']));
+
+    try {
+        $result = receiveSms($data);
+    } catch (Throwable $e) {
+        error_log('SMPP receive failed: ' . $e->getMessage());
+        // non-200 makes Jasmin retry the delivery
+        http_response_code(500);
+        header('Content-Type: text/plain');
+        echo 'ERROR';
+        exit;
+    }
+
+    if ($fromJasmin) {
+        header('Content-Type: text/plain');
+        echo 'ACK/Jasmin';
+        exit;
+    }
+    jsonResponse($result);
+}
+
 /**
- * Receive incoming SMS from Jasmin
+ * Store one inbound SMS: raw smpp_cdr row + billed sms_cdr row + balances.
  */
 function receiveSms($data) {
     global $db;
-    
-    // Extract SMS details from Jasmin webhook
-    $messageId = sanitize($data['message_id'] ?? uniqid('sms_', true));
-    $sourceAddr = sanitize($data['source_addr'] ?? $data['from'] ?? '');
-    $destAddr = sanitize($data['destination_addr'] ?? $data['to'] ?? '');
-    $shortMessage = sanitize($data['short_message'] ?? $data['message'] ?? '');
-    $submitDate = $data['submit_date'] ?? $data['timestamp'] ?? date('Y-m-d H:i:s');
-    $connectorId = sanitize($data['connector_id'] ?? '');
-    
-    if (empty($sourceAddr) || empty($destAddr)) {
-        jsonResponse(['error' => 'Missing source or destination'], 400);
+
+    $messageId = substr((string)($data['message_id'] ?? $data['id'] ?? uniqid('sms_', true)), 0, 50);
+    $source = substr(trim((string)($data['source_addr'] ?? $data['from'] ?? $data['cli'] ?? '')), 0, 20);
+    $dest = substr(preg_replace('/[^0-9A-Za-z]/', '', (string)($data['destination_addr'] ?? $data['to'] ?? '')), 0, 20);
+    $text = (string)($data['short_message'] ?? $data['content'] ?? $data['message'] ?? '');
+    $connector = substr((string)($data['connector_id'] ?? $data['origin-connector'] ?? ''), 0, 50);
+    $submitDate = date('Y-m-d H:i:s');
+
+    if ($source === '' || $dest === '') {
+        return ['success' => false, 'error' => 'Missing source or destination'];
     }
-    
-    // Log raw SMPP CDR
+
+    // duplicate delivery (Jasmin retry) -> acknowledge, don't bill twice
+    $dup = $db->query("SELECT id FROM smpp_cdr WHERE message_id = ? LIMIT 1", [$messageId])->fetch();
+    if ($dup) {
+        return ['success' => true, 'message' => 'Duplicate ignored', 'smpp_cdr_id' => (int)$dup['id']];
+    }
+
     $db->query(
         "INSERT INTO smpp_cdr (message_id, source_addr, destination_addr, short_message, message_status, submit_date, connector_id)
          VALUES (?, ?, ?, ?, 'delivered', ?, ?)",
-        [$messageId, $sourceAddr, $destAddr, $shortMessage, $submitDate, $connectorId]
+        [$messageId, $source, $dest, $text, $submitDate, $connector]
     );
-    $smppCdrId = $db->lastInsertId();
-    
-    // Find the number and its owner
-    $stmt = $db->query(
-        "SELECT n.*, r.id as range_id, r.range_name, r.manager_id, r.currency,
-                r.payout_1_1, r.payout_7_1, r.payout_7_7, r.payout_30_45,
-                n.pay_term, n.payout_rate
+    $smppCdrId = (int)$db->lastInsertId();
+
+    $number = $db->query(
+        "SELECT n.id, n.assigned_to, n.is_test, n.pay_term, n.payout_rate,
+                r.id AS range_id, r.range_name, r.manager_id, r.currency,
+                r.payout_1_1, r.payout_7_1, r.payout_7_7, r.payout_30_45
          FROM sms_numbers n
          JOIN sms_ranges r ON n.range_id = r.id
-         WHERE n.number = ? AND n.status = 'assigned'",
-        [$destAddr]
-    );
-    $number = $stmt->fetch();
-    
+         WHERE n.number = ? AND n.status = 'assigned' AND n.assigned_to IS NOT NULL",
+        [$dest]
+    )->fetch();
+
     if (!$number) {
-        // Number not found or not assigned - log but don't error
-        logActivity(null, 'sms_unknown_number', "SMS received for unknown/unassigned number: $destAddr");
-        jsonResponse([
-            'success' => true,
-            'message' => 'SMS logged but number not assigned',
-            'smpp_cdr_id' => $smppCdrId
-        ]);
+        logActivity(null, 'sms_unassigned_number', "SMS from $source to unassigned/unknown number $dest");
+        return ['success' => true, 'message' => 'Logged, number not assigned', 'smpp_cdr_id' => $smppCdrId];
     }
-    
-    // Get the user hierarchy
-    $clientId = $number['assigned_to'];
-    
-    // Get client details
-    $stmt = $db->query("SELECT id, username, parent_id, role FROM users WHERE id = ?", [$clientId]);
-    $client = $stmt->fetch();
-    
-    if (!$client) {
-        jsonResponse(['error' => 'User not found'], 404);
+
+    // rate: the rate stored on the number wins, else the range rate for its pay term
+    $termColumn = ['7/1' => 'payout_7_1', '7/7' => 'payout_7_7', '30/45' => 'payout_30_45'][$number['pay_term'] ?? ''] ?? 'payout_1_1';
+    $rate = (float)($number['payout_rate'] ?: ($number[$termColumn] ?: $number['payout_1_1']));
+    $isTest = (int)$number['is_test'] === 1;
+    if ($isTest) {
+        $rate = 0.0;
     }
-    
-    // Get agent (client's parent)
+
+    $ownerId = (int)$number['assigned_to'];
+    $owner = $db->query("SELECT id, role, parent_id FROM users WHERE id = ?", [$ownerId])->fetch();
+    if (!$owner) {
+        return ['success' => true, 'message' => 'Logged, owner missing', 'smpp_cdr_id' => $smppCdrId];
+    }
+
+    // agent override only applies when the owner is a client of an agent
     $agentId = null;
-    $agentPayout = 0;
-    if ($client['parent_id']) {
-        $stmt = $db->query("SELECT id, username, parent_id FROM users WHERE id = ?", [$client['parent_id']]);
-        $agent = $stmt->fetch();
-        $agentId = $agent['id'] ?? null;
+    if ($owner['role'] === 'client' && $owner['parent_id']) {
+        $parent = $db->query("SELECT id, role FROM users WHERE id = ?", [$owner['parent_id']])->fetch();
+        if ($parent && $parent['role'] === 'agent') {
+            $agentId = (int)$parent['id'];
+        }
     }
-    
-    // Get manager (agent's parent or directly from range)
-    $managerId = $number['manager_id'];
-    
-    // Calculate payouts based on pay_term
-    $userPayout = (float)($number['payout_rate'] ?: $number['payout_1_1']);
-    
-    // Determine payout column based on pay_term
-    $payTerm = $number['pay_term'] ?: '1/1';
-    switch ($payTerm) {
-        case '7/1':
-            $userPayout = (float)($number['payout_7_1'] ?: $number['payout_1_1']);
-            break;
-        case '7/7':
-            $userPayout = (float)($number['payout_7_7'] ?: $number['payout_1_1']);
-            break;
-        case '30/45':
-            $userPayout = (float)($number['payout_30_45'] ?: $number['payout_1_1']);
-            break;
-        default:
-            $userPayout = (float)$number['payout_1_1'];
-    }
-    
-    // Calculate hierarchy payouts (example distribution)
-    // Total payout = user_payout (client gets 100% of their rate)
-    // Agent gets percentage override, Manager gets percentage override
-    // Adjust these percentages based on your business model
-    
-    $clientPayout = $userPayout;  // Client gets full rate
-    $agentPayoutRate = 0.10;       // Agent gets 10% override
-    $managerPayoutRate = 0.05;     // Manager gets 5% override
-    
-    $agentPayout = $agentId ? ($userPayout * $agentPayoutRate) : 0;
-    $managerPayout = $userPayout * $managerPayoutRate;
-    
-    // Insert into main CDR
-    $db->query(
-        "INSERT INTO sms_cdr 
-         (message_id, source, destination, message, user_id, range_id, 
-          user_payout, agent_payout, my_payout, currency, smpp_message_id, 
-          smpp_status, connector_id, processed_at, date_time)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'delivered', ?, NOW(), NOW())",
-        [
-            $messageId,
-            $sourceAddr,
-            $destAddr,
-            $shortMessage,
-            $clientId,
-            $number['range_id'],
-            $clientPayout,
-            $agentPayout,
-            $managerPayout,
-            $number['currency'],
-            $messageId,
-            $connectorId
-        ]
-    );
-    $cdrId = $db->lastInsertId();
-    
-    // Update SMPP CDR with link
-    $db->query("UPDATE smpp_cdr SET cdr_id = ? WHERE id = ?", [$cdrId, $smppCdrId]);
-    
-    // Update balances
+
+    $ownerPayout   = $rate;
+    $agentPayout   = $agentId ? round($rate * SMPP_AGENT_OVERRIDE, 6) : 0.0;
+    $managerPayout = round($rate * SMPP_MANAGER_SHARE, 6);
+    $managerId = (int)$number['manager_id'];
+    $currency = $number['currency'];
+
     $db->beginTransaction();
-    
     try {
-        // Update client balance
         $db->query(
-            "INSERT INTO user_balances (user_id, currency, balance) 
-             VALUES (?, ?, ?) 
-             ON DUPLICATE KEY UPDATE balance = balance + ?",
-            [$clientId, $number['currency'], $clientPayout, $clientPayout]
-        );
-        
-        // Update agent balance
-        if ($agentId && $agentPayout > 0) {
-            $db->query(
-                "INSERT INTO user_balances (user_id, currency, balance) 
-                 VALUES (?, ?, ?) 
-                 ON DUPLICATE KEY UPDATE balance = balance + ?",
-                [$agentId, $number['currency'], $agentPayout, $agentPayout]
-            );
-        }
-        
-        // Update manager balance
-        if ($managerPayout > 0) {
-            $db->query(
-                "INSERT INTO user_balances (user_id, currency, balance) 
-                 VALUES (?, ?, ?) 
-                 ON DUPLICATE KEY UPDATE balance = balance + ?",
-                [$managerId, $number['currency'], $managerPayout, $managerPayout]
-            );
-        }
-        
-        // Update SMPP config stats
-        $db->query(
-            "UPDATE smpp_config SET total_received = total_received + 1, last_received_at = NOW() WHERE status = 'active'"
-        );
-        
-        $db->commit();
-        
-    } catch (Exception $e) {
-        $db->rollBack();
-        logActivity(null, 'smpp_balance_error', "Failed to update balances for SMS $messageId: " . $e->getMessage());
-        jsonResponse(['error' => 'Failed to update balances'], 500);
-    }
-    
-    // Log activity
-    logActivity($clientId, 'sms_received', "SMS received on {$number['range_name']}: $destAddr from $sourceAddr");
-    
-    // Create notifications
-    createNotification($clientId, 'SMS Received', "New SMS on $destAddr from $sourceAddr", 'info');
-    
-    if ($agentId) {
-        createNotification($agentId, 'Client SMS', "Client received SMS on $destAddr", 'info');
-    }
-    
-    // Return success
-    jsonResponse([
-        'success' => true,
-        'message' => 'SMS processed successfully',
-        'data' => [
-            'cdr_id' => $cdrId,
-            'smpp_cdr_id' => $smppCdrId,
-            'number' => $destAddr,
-            'range' => $number['range_name'],
-            'client_id' => $clientId,
-            'agent_id' => $agentId,
-            'manager_id' => $managerId,
-            'payouts' => [
-                'client' => $clientPayout,
-                'agent' => $agentPayout,
-                'manager' => $managerPayout,
-                'currency' => $number['currency']
+            "INSERT INTO sms_cdr
+               (date_time, range_id, number, cli, user_id, sms_count, sms_type, currency,
+                my_payout, user_payout, agent_payout, profit, smpp_message_id, smpp_status, connector_id, processed_at)
+             VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, 'delivered', ?, NOW())",
+            [
+                $submitDate, $number['range_id'], $dest, $source, $ownerId,
+                $isTest ? 'test' : 'general', $currency,
+                $managerPayout, $ownerPayout, $agentPayout, $managerPayout,
+                $messageId, $connector
             ]
-        ]
-    ]);
+        );
+        $cdrId = (int)$db->lastInsertId();
+        $db->query("UPDATE smpp_cdr SET cdr_id = ? WHERE id = ?", [$cdrId, $smppCdrId]);
+
+        if ($ownerPayout > 0) updateBalance($ownerId, $currency, $ownerPayout, 'credit');
+        if ($agentId && $agentPayout > 0) updateBalance($agentId, $currency, $agentPayout, 'credit');
+        if ($managerPayout > 0) updateBalance($managerId, $currency, $managerPayout, 'credit');
+
+        $db->query("UPDATE smpp_config SET total_received = total_received + 1, last_received_at = NOW() WHERE status = 'active'");
+        $db->commit();
+    } catch (Throwable $e) {
+        $db->rollBack();
+        throw $e;
+    }
+
+    createNotification($ownerId, 'SMS Received', "New SMS on $dest from $source", 'info');
+    if ($agentId) {
+        createNotification($agentId, 'Client SMS', "Client received SMS on $dest", 'info');
+    }
+
+    return [
+        'success' => true,
+        'message' => 'SMS processed',
+        'cdr_id' => $cdrId,
+        'smpp_cdr_id' => $smppCdrId,
+        'number' => $dest,
+        'range' => $number['range_name'],
+        'payouts' => ['owner' => $ownerPayout, 'agent' => $agentPayout, 'manager' => $managerPayout, 'currency' => $currency]
+    ];
 }
 
-/**
- * Get SMPP server status
- */
+/* ------------------------------------------------------------------ */
+/* Manager endpoints                                                   */
+/* ------------------------------------------------------------------ */
+
+function jasminHost() {
+    return getenv('JASMIN_HOST') ?: 'jasmin';
+}
+
+function jasminReachable() {
+    $errno = 0; $errstr = '';
+    $sock = @fsockopen(jasminHost(), 2775, $errno, $errstr, 2);
+    if ($sock) {
+        fclose($sock);
+        return true;
+    }
+    return false;
+}
+
 function getSmppStatus() {
     global $db;
-    
-    // Check if Jasmin is running
-    $jasminRunning = false;
-    $pid = exec('pgrep -f jasmind');
-    if ($pid) {
-        $jasminRunning = true;
-    }
-    
-    // Get config
-    $stmt = $db->query("SELECT * FROM smpp_config WHERE status = 'active' LIMIT 1");
-    $config = $stmt->fetch();
-    
-    // Get recent stats
-    $stmt = $db->query("SELECT COUNT(*) as count FROM smpp_cdr WHERE submit_date >= DATE_SUB(NOW(), INTERVAL 1 HOUR)");
-    $hourlyCount = (int)$stmt->fetch()['count'];
-    
-    $stmt = $db->query("SELECT COUNT(*) as count FROM smpp_cdr WHERE submit_date >= DATE_SUB(NOW(), INTERVAL 24 HOUR)");
-    $dailyCount = (int)$stmt->fetch()['count'];
-    
+
+    $config = $db->query("SELECT * FROM smpp_config WHERE status = 'active' LIMIT 1")->fetch();
+    $hourly = (int)$db->query("SELECT COUNT(*) c FROM smpp_cdr WHERE submit_date >= DATE_SUB(NOW(), INTERVAL 1 HOUR)")->fetch()['c'];
+    $daily = (int)$db->query("SELECT COUNT(*) c FROM smpp_cdr WHERE submit_date >= DATE_SUB(NOW(), INTERVAL 24 HOUR)")->fetch()['c'];
+
     jsonResponse([
         'success' => true,
         'status' => [
-            'jasmin_running' => $jasminRunning,
-            'smpp_port' => 2775,
+            'jasmin_running' => jasminReachable(),
+            'smpp_port' => (int)(getenv('SMPP_PUBLIC_PORT') ?: 2775),
             'config' => $config ? [
                 'name' => $config['config_name'],
-                'host' => $config['inbound_host'],
-                'port' => $config['inbound_port'],
                 'total_received' => (int)$config['total_received'],
                 'last_received' => $config['last_received_at']
             ] : null,
-            'stats' => [
-                'hourly' => $hourlyCount,
-                'daily' => $dailyCount
-            ]
+            'stats' => ['hourly' => $hourly, 'daily' => $daily]
         ]
     ]);
 }
 
-/**
- * Get SMPP statistics for dashboard
- */
+function getSmppConfig() {
+    $host = getenv('SMPP_PUBLIC_HOST') ?: ($_SERVER['HTTP_HOST'] ?? 'localhost');
+    $host = preg_replace('/:\d+$/', '', $host);
+    $key = webhookKey();
+
+    jsonResponse([
+        'success' => true,
+        'config' => [
+            'host' => $host,
+            'port' => (int)(getenv('SMPP_PUBLIC_PORT') ?: 2775),
+            'system_id' => getenv('SMPP_SUPPLIER_USER') ?: '',
+            'password' => getenv('SMPP_SUPPLIER_PASS') ?: '',
+            'webhook_key_set' => $key !== null
+        ]
+    ]);
+}
+
 function getSmppStats() {
     global $db, $userId, $role;
-    
+
     $today = date('Y-m-d');
-    $thisMonth = date('Y-m');
-    
+    $month = date('Y-m');
     $stats = [];
-    
+
     if ($role === 'manager') {
-        // Manager sees all
-        $stmt = $db->query("SELECT COUNT(*) as count FROM smpp_cdr WHERE DATE(submit_date) = ?", [$today]);
-        $stats['today'] = (int)$stmt->fetch()['count'];
-        
-        $stmt = $db->query("SELECT COUNT(*) as count FROM smpp_cdr WHERE DATE_FORMAT(submit_date, '%Y-%m') = ?", [$thisMonth]);
-        $stats['month'] = (int)$stmt->fetch()['count'];
-        
-        // By range
-        $stmt = $db->query(
-            "SELECT r.range_name, COUNT(*) as count
+        $stats['today'] = (int)$db->query("SELECT COUNT(*) c FROM smpp_cdr WHERE DATE(submit_date) = ?", [$today])->fetch()['c'];
+        $stats['month'] = (int)$db->query("SELECT COUNT(*) c FROM smpp_cdr WHERE DATE_FORMAT(submit_date, '%Y-%m') = ?", [$month])->fetch()['c'];
+        $stats['by_range'] = $db->query(
+            "SELECT r.range_name, COUNT(*) AS count
              FROM smpp_cdr s
              JOIN sms_cdr c ON s.cdr_id = c.id
              JOIN sms_ranges r ON c.range_id = r.id
              WHERE DATE_FORMAT(s.submit_date, '%Y-%m') = ?
-             GROUP BY r.id
-             ORDER BY count DESC
-             LIMIT 5",
-            [$thisMonth]
-        );
-        $stats['by_range'] = $stmt->fetchAll();
-        
+             GROUP BY r.id ORDER BY count DESC LIMIT 5",
+            [$month]
+        )->fetchAll();
     } elseif ($role === 'agent') {
-        // Agent sees their numbers + clients
-        $stmt = $db->query(
-            "SELECT COUNT(*) as count FROM smpp_cdr s
-             JOIN sms_cdr c ON s.cdr_id = c.id
-             WHERE DATE(s.submit_date) = ?
-             AND (c.user_id = ? OR c.user_id IN (SELECT id FROM users WHERE parent_id = ?))",
+        $stats['today'] = (int)$db->query(
+            "SELECT COUNT(*) c FROM smpp_cdr s JOIN sms_cdr c ON s.cdr_id = c.id
+             WHERE DATE(s.submit_date) = ? AND (c.user_id = ? OR c.user_id IN (SELECT id FROM users WHERE parent_id = ?))",
             [$today, $userId, $userId]
-        );
-        $stats['today'] = (int)$stmt->fetch()['count'];
-        
+        )->fetch()['c'];
     } else {
-        // Client sees only their numbers
-        $stmt = $db->query(
-            "SELECT COUNT(*) as count FROM smpp_cdr s
-             JOIN sms_cdr c ON s.cdr_id = c.id
+        $stats['today'] = (int)$db->query(
+            "SELECT COUNT(*) c FROM smpp_cdr s JOIN sms_cdr c ON s.cdr_id = c.id
              WHERE DATE(s.submit_date) = ? AND c.user_id = ?",
             [$today, $userId]
-        );
-        $stats['today'] = (int)$stmt->fetch()['count'];
+        )->fetch()['c'];
     }
-    
+
     jsonResponse(['success' => true, 'stats' => $stats]);
 }

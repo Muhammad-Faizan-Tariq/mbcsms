@@ -32,6 +32,9 @@ switch ($method) {
             case 'export':
                 exportCdr();
                 break;
+            case 'cli_lookup':
+                cliLookup();
+                break;
             default:
                 getCdrDatatable();
         }
@@ -487,4 +490,102 @@ function receiveSms() {
             'currency' => $numberData['currency']
         ]
     ]);
+}
+
+
+/**
+ * CLI lookup: who (which CLI / sender) sent SMS, to which numbers, when, and what it earned.
+ *
+ * GET ?action=cli_lookup&cli=<text>[&number=<text>][&fdate1=..&fdate2=..]
+ *   -> summary: one row per CLI (count, distinct numbers, first/last seen, payouts)
+ * GET ?action=cli_lookup&cli=<exact CLI>&detail=1
+ *   -> latest 200 individual messages from that CLI (with message text)
+ * Every role only sees its own scope (manager: all, agent: self + clients, client: self).
+ */
+function cliLookup() {
+    global $db, $userId, $role;
+
+    $cli = trim((string)($_GET['cli'] ?? ''));
+    $number = trim((string)($_GET['number'] ?? ''));
+    $detail = !empty($_GET['detail']);
+    $dateFrom = sanitize($_GET['fdate1'] ?? date('Y-m-d 00:00:00', strtotime('-7 days')));
+    $dateTo = sanitize($_GET['fdate2'] ?? date('Y-m-d 23:59:59'));
+
+    if ($cli === '' && $number === '') {
+        jsonResponse(['error' => 'Enter a CLI or a number to look up'], 400);
+    }
+
+    $where = "c.cli IS NOT NULL AND c.cli <> '' AND c.date_time BETWEEN ? AND ?";
+    $params = [$dateFrom, $dateTo];
+
+    if ($role === 'manager') {
+        $where .= " AND c.range_id IN (SELECT id FROM sms_ranges WHERE manager_id = ?)";
+        $params[] = $userId;
+    } elseif ($role === 'agent') {
+        $where .= " AND (c.user_id = ? OR c.user_id IN (SELECT id FROM users WHERE parent_id = ?))";
+        $params[] = $userId;
+        $params[] = $userId;
+    } else {
+        $where .= " AND c.user_id = ?";
+        $params[] = $userId;
+    }
+
+    // escape LIKE wildcards typed by the user
+    $like = function ($v) { return '%' . addcslashes($v, '%_\\') . '%'; };
+
+    if ($detail) {
+        $where .= " AND c.cli = ?";
+        $params[] = $cli;
+    } elseif ($cli !== '') {
+        $where .= " AND c.cli LIKE ?";
+        $params[] = $like($cli);
+    }
+    if ($number !== '') {
+        $where .= " AND c.number LIKE ?";
+        $params[] = $like($number);
+    }
+
+    if ($detail) {
+        $rows = $db->query(
+            "SELECT c.date_time, c.number, c.cli, r.range_name, u.username, c.currency,
+                    c.user_payout, c.my_payout, s.short_message AS message
+             FROM sms_cdr c
+             LEFT JOIN sms_ranges r ON c.range_id = r.id
+             LEFT JOIN users u ON c.user_id = u.id
+             LEFT JOIN smpp_cdr s ON s.cdr_id = c.id
+             WHERE $where
+             ORDER BY c.date_time DESC LIMIT 200",
+            $params
+        )->fetchAll();
+
+        if ($role !== 'manager') {
+            foreach ($rows as &$r) { unset($r['my_payout']); }   // manager-only figure
+            unset($r);
+        }
+        jsonResponse(['success' => true, 'data' => $rows]);
+    }
+
+    $rows = $db->query(
+        "SELECT c.cli,
+                SUM(c.sms_count) AS sms_count,
+                COUNT(DISTINCT c.number) AS numbers,
+                MIN(c.date_time) AS first_seen,
+                MAX(c.date_time) AS last_seen,
+                MAX(c.currency) AS currency,
+                SUM(c.user_payout) AS user_payout,
+                SUM(c.my_payout) AS my_payout
+         FROM sms_cdr c
+         WHERE $where
+         GROUP BY c.cli
+         ORDER BY sms_count DESC, last_seen DESC
+         LIMIT 100",
+        $params
+    )->fetchAll();
+
+    if ($role !== 'manager') {
+        foreach ($rows as &$r) { unset($r['my_payout']); }
+        unset($r);
+    }
+
+    jsonResponse(['success' => true, 'data' => $rows, 'from' => $dateFrom, 'to' => $dateTo]);
 }
